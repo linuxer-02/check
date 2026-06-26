@@ -1,4 +1,4 @@
-﻿services:
+services:
   - type: web
     name: rsvp-web-app
     runtime: node
@@ -55,8 +55,9 @@
         sync: false
 
       - key: GROQ_MODEL
-        value: llama3-8b-8192
+        value: llama-3.3-70b-versatile
 
       # ── Runtime ──────────────────────────────────────────────────────────────
+      # Render injects PORT automatically; this line documents it explicitly.
       - key: PORT
-        value: 10000
+        value: 8000
