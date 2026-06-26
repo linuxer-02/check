@@ -1,0 +1,62 @@
+﻿services:
+  - type: web
+    name: rsvp-web-app
+    runtime: node
+    plan: free
+    region: oregon
+
+    # Build & start
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+
+    # Render health check — maps to our /health endpoint
+    healthCheckPath: /health
+
+    # Graceful shutdown window (seconds)
+    maxShutdownDelaySeconds: 30
+
+    # Auto-deploy on every push to the default branch
+    autoDeployTrigger: commit
+
+    envVars:
+      # ── Supabase ─────────────────────────────────────────────────────────────
+      - key: SUPABASE_URL
+        sync: false
+
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+      - key: SUPABASE_STATE_TABLE
+        value: rsvp_app_state
+
+      - key: SUPABASE_CALC_TABLE
+        value: rsvp_calculations
+
+      - key: SUPABASE_CALC_BUCKET
+        value: calculation-pdfs
+
+      - key: SUPABASE_PROJECT_DOC_BUCKET
+        value: project-documents
+
+      - key: SUPABASE_COMMON_BUCKET
+        value: commonData
+
+      - key: SUPABASE_PID_BUCKET
+        value: PID
+
+      - key: SUPABASE_GAD_BUCKET
+        value: GAD
+
+      - key: SUPABASE_TDS_BUCKET
+        value: technicalDataSheet
+
+      # ── Groq AI ──────────────────────────────────────────────────────────────
+      - key: GROQ_API_KEY
+        sync: false
+
+      - key: GROQ_MODEL
+        value: llama3-8b-8192
+
+      # ── Runtime ──────────────────────────────────────────────────────────────
+      - key: PORT
+        value: 10000

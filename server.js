@@ -3,6 +3,7 @@ require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const zlib = require("zlib");
 
 const DATA_DIR = path.join(__dirname, ".rsvp-data");
 const STATE_FILE = path.join(DATA_DIR, "state.json");
@@ -26,13 +27,21 @@ function ensureDataDir() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-function send(res, status, content, contentType) {
-  res.writeHead(status, { "Content-Type": contentType || "application/json" });
+function send(res, status, content, contentType, extraHeaders) {
+  res.writeHead(status, { "Content-Type": contentType || "application/json", ...(extraHeaders || {}) });
   res.end(content);
 }
 
 function sendJson(res, status, payload) {
   send(res, status, JSON.stringify(payload), "application/json");
+}
+
+function safeParseJson(text, fallback) {
+  try {
+    return JSON.parse(text || "{}");
+  } catch (_) {
+    return fallback !== undefined ? fallback : {};
+  }
 }
 
 function readBody(req) {
@@ -693,6 +702,11 @@ function getContentType(filePath) {
   return "application/octet-stream";
 }
 
+// Extensions to compress with gzip
+const GZIP_EXTS = new Set([".html", ".js", ".css", ".json"]);
+// Extensions that browsers can cache aggressively (not HTML)
+const CACHE_EXTS = new Set([".js", ".css"]);
+
 async function handleApi(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
@@ -712,14 +726,14 @@ async function handleApi(req, res) {
   }
 
   if (parsed.pathname === "/api/state" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     await saveAppState(payload);
     sendJson(res, 200, { ok: true, savedAt: new Date().toISOString() });
     return;
   }
 
   if (parsed.pathname === "/api/calculations" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     const record = await saveCalculation(payload);
     sendJson(res, 200, {
       ok: true,
@@ -732,7 +746,7 @@ async function handleApi(req, res) {
   }
 
   if (parsed.pathname === "/api/documents/get" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     const result = await getProjectDocument(payload);
     sendJson(res, 200, {
       ok: !result.error,
@@ -743,7 +757,7 @@ async function handleApi(req, res) {
   }
 
   if (parsed.pathname === "/api/project-documents" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     const record = await saveProjectDocument(payload);
     sendJson(res, 200, {
       ok: true,
@@ -753,7 +767,7 @@ async function handleApi(req, res) {
   }
 
   if (parsed.pathname === "/api/ai/generate" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     const result = await generateAiText(payload);
     sendJson(res, 200, {
       ok: true,
@@ -792,7 +806,7 @@ async function handleApi(req, res) {
   }
 
   if (parsed.pathname === "/api/projects/save-proposal-docs" && req.method === "POST") {
-    const payload = JSON.parse((await readBody(req)) || "{}");
+    const payload = safeParseJson(await readBody(req));
     const projectName = payload.project_name || "Unknown Project";
     const savedAt = new Date().toISOString();
     const pathInfo = `/database/Projects/${projectName}/Proposal Docs`;
@@ -806,6 +820,11 @@ async function handleApi(req, res) {
 const server = http.createServer(async (req, res) => {
   console.log(`[request] ${req.method} ${req.url}`);
   try {
+    if (req.url === "/health" || req.url.startsWith("/health?")) {
+      sendJson(res, 200, { ok: true, ts: new Date().toISOString() });
+      return;
+    }
+
     if (req.url.startsWith("/api/")) {
       await handleApi(req, res);
       return;
@@ -819,11 +838,31 @@ const server = http.createServer(async (req, res) => {
       send(res, 403, "Forbidden", "text/plain");
       return;
     }
+    const ext = path.extname(filePath).toLowerCase();
+    const acceptsGzip = /gzip/i.test(req.headers["accept-encoding"] || "");
+    const shouldGzip = acceptsGzip && GZIP_EXTS.has(ext);
+    const cacheHeader = CACHE_EXTS.has(ext)
+      ? { "Cache-Control": "public, max-age=86400" }
+      : { "Cache-Control": "no-cache" };
+
     fs.readFile(filePath, (err, data) => {
       if (err) {
         send(res, 404, "File not found", "text/plain");
+        return;
+      }
+      if (shouldGzip) {
+        zlib.gzip(data, (gzErr, compressed) => {
+          if (gzErr) {
+            send(res, 200, data, getContentType(filePath), cacheHeader);
+          } else {
+            send(res, 200, compressed, getContentType(filePath), {
+              ...cacheHeader,
+              "Content-Encoding": "gzip",
+            });
+          }
+        });
       } else {
-        send(res, 200, data, getContentType(filePath));
+        send(res, 200, data, getContentType(filePath), cacheHeader);
       }
     });
   } catch (error) {
@@ -833,8 +872,12 @@ const server = http.createServer(async (req, res) => {
 });
 
 const DEFAULT_PORT = process.env.PORT ? Number(process.env.PORT) : 8001;
+// On Render (or any managed host) PORT is always available and uncontested,
+// so retries are disabled.  Locally we still retry to avoid conflicts.
+const PORT_RETRIES = process.env.PORT ? 0 : 3;
 
-function listenOnPort(port, retries = 3) {
+function listenOnPort(port, retries) {
+  if (retries === undefined) retries = PORT_RETRIES;
   server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
     if (hasSupabase()) {
@@ -856,3 +899,24 @@ function listenOnPort(port, retries = 3) {
 }
 
 listenOnPort(DEFAULT_PORT);
+
+// ── Graceful shutdown ──────────────────────────────────────────────────────
+// Render sends SIGTERM before terminating the container during redeploys.
+// Closing the HTTP server lets in-flight requests finish before exit.
+process.on("SIGTERM", () => {
+  console.log("[shutdown] SIGTERM received — closing server gracefully");
+  server.close((err) => {
+    if (err) {
+      console.error("[shutdown] Error closing server:", err);
+      process.exit(1);
+    } else {
+      console.log("[shutdown] Server closed cleanly");
+      process.exit(0);
+    }
+  });
+  // Force-kill after maxShutdownDelaySeconds if still open
+  setTimeout(() => {
+    console.error("[shutdown] Forced exit after timeout");
+    process.exit(1);
+  }, 28000).unref();
+});
