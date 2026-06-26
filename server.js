@@ -813,7 +813,7 @@ const server = http.createServer(async (req, res) => {
 
     const parsed = new URL(req.url, `http://${req.headers.host}`);
     const safePath = decodeURIComponent(parsed.pathname).replace(/^[/\\]+/, "");
-    const requested = safePath || "chlorotech-dashboard-enhanced.html";
+    const requested = safePath || "dashboard.html";
     const filePath = path.resolve(__dirname, requested);
     if (!filePath.startsWith(__dirname)) {
       send(res, 403, "Forbidden", "text/plain");
