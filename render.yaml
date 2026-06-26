@@ -13,7 +13,7 @@ services:
     healthCheckPath: /health
 
     # Graceful shutdown window (seconds)
-    maxShutdownDelaySeconds: 30
+   
 
     # Auto-deploy on every push to the default branch
     autoDeployTrigger: commit
