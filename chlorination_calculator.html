@@ -1,0 +1,3797 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chlorination System Calculator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0e1a;
+        --bg-secondary: #12171f;
+        --bg-tertiary: #1a2332;
+        --accent-cyan: #00ffd5;
+        --accent-blue: #0088ff;
+        --accent-purple: #b366ff;
+        --text-primary: #e8f0ff;
+        --text-secondary: #8fa3c4;
+        --border-color: #2a3f5f;
+        --success: #00ff88;
+        --warning: #ffa500;
+        --danger: #ff3366;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto Mono", monospace;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        background-image:
+          radial-gradient(
+            circle at 20% 30%,
+            rgba(0, 136, 255, 0.05) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(179, 102, 255, 0.05) 0%,
+            transparent 50%
+          );
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 213, 0.02) 2px,
+          rgba(0, 255, 213, 0.02) 4px
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 2;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding: 40px 20px;
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary) 0%,
+          var(--bg-tertiary) 100%
+        );
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 255, 213, 0.1) 0%,
+          transparent 70%
+        );
+        animation: pulse 8s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        50% {
+          transform: scale(1.1) rotate(180deg);
+        }
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 3.5rem;
+        font-weight: 900;
+        letter-spacing: 4px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-cyan) 0%,
+          var(--accent-blue) 50%,
+          var(--accent-purple) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+        animation: glow 3s ease-in-out infinite;
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 20px rgba(0, 255, 213, 0.3));
+        }
+        50% {
+          filter: drop-shadow(0 0 40px rgba(0, 255, 213, 0.6));
+        }
+      }
+
+      .subtitle {
+        font-family: "Roboto Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        position: relative;
+        z-index: 1;
+      }
+
+      .calculator-form {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 40px;
+        margin-bottom: 40px;
+      }
+
+      .section {
+        margin-bottom: 40px;
+        padding: 30px;
+        background: var(--bg-tertiary);
+        border-left: 4px solid var(--accent-cyan);
+        border-radius: 4px;
+      }
+
+      .section-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.3rem;
+        color: var(--accent-cyan);
+        margin-bottom: 25px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title::before {
+        content: "▸";
+        font-size: 1.5rem;
+      }
+
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        letter-spacing: 1px;
+        font-weight: 500;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 12px 15px;
+        color: var(--text-primary);
+        font-family: "Roboto Mono", monospace;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+
+      select {
+        cursor: pointer;
+      }
+
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 0 3px rgba(0, 255, 213, 0.1);
+      }
+
+      input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.5;
+      }
+
+      .flow-rate-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 120px;
+        gap: 10px;
+      }
+
+      .dosing-point {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 20px;
+      }
+
+      .dosing-point-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1rem;
+        color: var(--accent-blue);
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+      }
+
+      .btn {
+        background: linear-gradient(
+          135deg,
+          var(--accent-cyan) 0%,
+          var(--accent-blue) 100%
+        );
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 4px;
+        padding: 15px 40px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.6s,
+          height 0.6s;
+      }
+
+      .btn:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 255, 213, 0.3);
+      }
+
+      .btn-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 40px;
+      }
+
+      .results {
+        background: #0f141c;
+        border: 1px solid #222b38;
+        border-radius: 8px;
+        padding: 28px;
+        display: none;
+      }
+
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .results-title {
+        font-family: "Roboto Mono", monospace;
+        font-size: 1.25rem;
+        color: #f8fafc;
+        margin-bottom: 20px;
+        text-align: left;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0 24px;
+      }
+
+      .result-card {
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid #222b38;
+        border-radius: 0;
+        padding: 14px 0;
+        transition: border-color 0.2s ease;
+        position: relative;
+      }
+
+      .result-card::before {
+        display: none;
+      }
+
+      .result-card:hover {
+        border-color: #334155;
+      }
+
+      .result-label {
+        font-size: 0.75rem;
+        color: #8ea0b8;
+        letter-spacing: 0;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+      }
+
+      .result-value {
+        font-family: "Roboto Mono", monospace;
+        font-size: 1.35rem;
+        color: #f8fafc;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      .result-unit {
+        font-size: 0.8rem;
+        color: #8ea0b8;
+        font-weight: 400;
+        margin-left: 5px;
+      }
+
+      .diffuser-results {
+        margin-top: 28px;
+        padding-top: 24px;
+        border-top: 1px solid #222b38;
+      }
+
+      .diffuser-card {
+        background: #0b0f16;
+        border: 1px solid #222b38;
+        border-radius: 8px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+
+      .diffuser-title {
+        font-family: "Roboto Mono", monospace;
+        font-size: 1rem;
+        color: #f8fafc;
+        margin-bottom: 14px;
+        letter-spacing: 0;
+      }
+
+      .error-message {
+        background: rgba(255, 51, 102, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 15px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .input-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .boq-wrapper {
+        margin-top: 30px;
+      }
+
+      .boq-area-title {
+        font-family: "Orbitron", sans-serif;
+        color: var(--accent-cyan);
+        margin-top: 40px;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        letter-spacing: 1px;
+      }
+
+      .boq-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+      }
+
+      .boq-table th,
+      .boq-table td {
+        border: 1px solid #2a3f5f;
+        padding: 10px;
+        font-size: 13px;
+      }
+
+      .boq-table th {
+        background: #12171f;
+        color: #00ffd5;
+      }
+
+      .boq-table td {
+        background: #0a0e1a;
+        color: #ffffff;
+      }
+
+      .boq-table input {
+        width: 100%;
+        background: #111827;
+        border: 1px solid #334155;
+        color: white;
+        padding: 6px;
+      }
+
+      .boq-actions {
+        margin-bottom: 20px;
+      }
+
+      .btn-small {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+      }
+
+      .checkbox-cell {
+        text-align: center;
+      }
+
+      .area-total {
+        text-align: right;
+        margin-bottom: 25px;
+        font-size: 15px;
+        color: #00ffd5;
+      }
+
+      .grand-total {
+        margin-top: 30px;
+        padding: 20px;
+        background: #12171f;
+        border: 2px solid #00ffd5;
+        font-size: 20px;
+        text-align: right;
+        color: #00ffd5;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Chlorination System</h1>
+        <p class="subtitle">Engineering Calculator</p>
+      </header>
+
+      <div class="calculator-form">
+        <div id="errorContainer"></div>
+
+        <!-- Basic Parameters -->
+        <div class="section">
+          <h3 class="section-title">Basic Parameters</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Working Time (hours)</label>
+              <input
+                type="number"
+                id="workingTime"
+                step="0.01"
+                placeholder="0"
+                value="22"
+              />
+            </div>
+            <div class="input-group">
+              <label>Flow Rate</label>
+              <div class="flow-rate-control">
+                <input type="number" id="flowRateM3" step="1" placeholder="0" />
+                <select id="flowRateUnit" aria-label="Flow Rate Unit">
+                  <option value="m3hr">m³/hr</option>
+                  <option value="mld">MLD</option>
+                  <option value="ltrhr">ltr/hr</option>
+                </select>
+              </div>
+              <input type="hidden" id="flowRateM3Converted" />
+            </div>
+            <div class="input-group">
+              <label>System Capacity (kg/hr)</label>
+              <input
+                type="number"
+                id="systemCapacityInput"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Tonner/Cylinder Requirement</label>
+              <input
+                type="number"
+                id="tonnerRequirementInput"
+                step="1"
+                min="0"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>No of Dosing Points</label>
+              <input
+                type="number"
+                id="noOfDosingPoints"
+                step="1"
+                min="1"
+                placeholder="1"
+                value="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Velocity Parameters -->
+        <div class="section">
+          <h3 class="section-title">Velocity Parameters</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Input Vacuum Velocity (m/s)</label>
+              <input
+                type="number"
+                id="velocityVacuum"
+                step="1"
+                placeholder="0"
+                value="8"
+              />
+            </div>
+            <div class="input-group">
+              <label>Input Gas Velocity (m/s)</label>
+              <input
+                type="number"
+                id="velocityGas"
+                step="1"
+                placeholder="0"
+                value="8"
+              />
+            </div>
+            <div class="input-group">
+              <label>Input Suction Velocity (m/s)</label>
+              <input
+                type="number"
+                id="velocitySuction"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Input Discharge Velocity (m/s)</label>
+              <input
+                type="number"
+                id="velocityDischarge"
+                step="1"
+                placeholder="0"
+                value="1.5"
+              />
+            </div>
+            <div class="input-group">
+              <label>Input Solution Velocity (m/s)</label>
+              <input
+                type="number"
+                id="velocitySolution"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Suction Line Parameters -->
+        <div class="section">
+          <h3 class="section-title">Suction Line Parameters</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Absolute Roughness (mm)</label>
+              <input
+                type="number"
+                id="roughnessSuction"
+                step="1"
+                placeholder="0"
+                value="0.0015"
+              />
+            </div>
+            <div class="input-group">
+              <label>Pipe Line Length (m)</label>
+              <input
+                type="number"
+                id="lengthSuction"
+                step="0.01"
+                placeholder="0"
+                value="2"
+              />
+            </div>
+            <div class="input-group">
+              <label>P Suction (bar)</label>
+              <input type="number" id="pSuction" step="0.01" placeholder="0" />
+            </div>
+            <div class="input-group">
+              <label>Z Suction Surface (m)</label>
+              <input
+                type="number"
+                id="zSuctionSurface"
+                step="1"
+                placeholder="0"
+                value="2"
+              />
+            </div>
+            <div class="input-group">
+              <label>Z Suction Centerline (m)</label>
+              <input
+                type="number"
+                id="zSuctionCenterline"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Discharge Line Parameters -->
+        <div class="section">
+          <h3 class="section-title">Discharge Line Parameters</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Absolute Roughness (mm)</label>
+              <input
+                type="number"
+                id="roughnessDischarge"
+                step="0.001"
+                placeholder="0"
+                value="0.0015"
+              />
+            </div>
+            <div class="input-group">
+              <label>Pipe Line Length (m)</label>
+              <input
+                type="number"
+                id="lengthDischarge"
+                step="0.01"
+                placeholder="0"
+                value="10"
+              />
+            </div>
+            <div class="input-group">
+              <label>P Discharge (bar)</label>
+              <input
+                type="number"
+                id="pDischarge"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Z Discharge Surface (m)</label>
+              <input
+                type="number"
+                id="zDischargeSurface"
+                step="1"
+                placeholder="0"
+                value="5"
+              />
+            </div>
+            <div class="input-group">
+              <label>Z Discharge Centerline (m)</label>
+              <input
+                type="number"
+                id="zDischargeCenterline"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Fittings - Suction Line -->
+        <div class="section">
+          <h3 class="section-title">Fittings - Suction Line</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>90° Standard Elbow</label>
+              <input
+                type="number"
+                id="elbow90Suction"
+                step="1"
+                placeholder="0"
+                value="3"
+              />
+            </div>
+            <div class="input-group">
+              <label>45° Standard Elbow</label>
+              <input
+                type="number"
+                id="elbow45Suction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>90° Long Radius Elbow</label>
+              <input
+                type="number"
+                id="elbowLRSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Tee – Straight Through</label>
+              <input
+                type="number"
+                id="teeStraightSuction"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Tee – Branch Flow</label>
+              <input
+                type="number"
+                id="teeBranchSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Gate Valve (Full Open)</label>
+              <input
+                type="number"
+                id="gateValveSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Ball Valve (Full Open)</label>
+              <input
+                type="number"
+                id="ballValveSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Manifold Valve</label>
+              <input
+                type="number"
+                id="manifoldValveSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Globe Valve (Full Open)</label>
+              <input
+                type="number"
+                id="globeValveSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Swing Check Valve</label>
+              <input
+                type="number"
+                id="swingCheckSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Butterfly Valve (Full Open)</label>
+              <input
+                type="number"
+                id="butterflyValveSuction"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Diaphragm Valve</label>
+              <input
+                type="number"
+                id="diaphragmValveSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Non-Return Valve (NRV)</label>
+              <input type="number" id="nrvSuction" step="1" placeholder="0" />
+            </div>
+            <div class="input-group">
+              <label>Flow meter (rotameter)</label>
+              <input
+                type="number"
+                id="flowmeterSuction"
+                step="1"
+                placeholder="0"
+                value="7"
+              />
+            </div>
+            <div class="input-group">
+              <label>Union</label>
+              <input type="number" id="unionSuction" step="1" placeholder="0" />
+            </div>
+            <div class="input-group">
+              <label>Connector</label>
+              <input
+                type="number"
+                id="connectorSuction"
+                step="1"
+                placeholder="0"
+                value="5"
+              />
+            </div>
+            <div class="input-group">
+              <label>Coupling</label>
+              <input
+                type="number"
+                id="couplingSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Reducer</label>
+              <input
+                type="number"
+                id="reducerSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Reducer (Tapered)</label>
+              <input
+                type="number"
+                id="reducerTaperedSuction"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Fittings - Discharge Line -->
+        <div class="section">
+          <h3 class="section-title">Fittings - Discharge Line</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>90° Standard Elbow</label>
+              <input
+                type="number"
+                id="elbow90Discharge"
+                step="1"
+                placeholder="0"
+                value="3"
+              />
+            </div>
+            <div class="input-group">
+              <label>45° Standard Elbow</label>
+              <input
+                type="number"
+                id="elbow45Discharge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>90° Long Radius Elbow</label>
+              <input
+                type="number"
+                id="elbowLRDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Tee – Straight Through</label>
+              <input
+                type="number"
+                id="teeStraightDischarge"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Tee – Branch Flow</label>
+              <input
+                type="number"
+                id="teeBranchDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Gate Valve (Full Open)</label>
+              <input
+                type="number"
+                id="gateValveDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Ball Valve (Full Open)</label>
+              <input
+                type="number"
+                id="ballValveDischarge"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Manifold Valve</label>
+              <input
+                type="number"
+                id="manifoldValveDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Globe Valve (Full Open)</label>
+              <input
+                type="number"
+                id="globeValveDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Swing Check Valve</label>
+              <input
+                type="number"
+                id="swingCheckDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Butterfly Valve (Full Open)</label>
+              <input
+                type="number"
+                id="butterflyValveDischarge"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Diaphragm Valve</label>
+              <input
+                type="number"
+                id="diaphragmValveDischarge"
+                step="1"
+                placeholder="0"
+                value="2"
+              />
+            </div>
+            <div class="input-group">
+              <label>Non-Return Valve (NRV)</label>
+              <input
+                type="number"
+                id="nrvDischarge"
+                step="1"
+                placeholder="0"
+                value="2"
+              />
+            </div>
+            <div class="input-group">
+              <label>Flow meter (rotameter)</label>
+              <input
+                type="number"
+                id="flowmeterDischarge"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+            <div class="input-group">
+              <label>Union</label>
+              <input
+                type="number"
+                id="unionDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Connector</label>
+              <input
+                type="number"
+                id="connectorDischarge"
+                step="1"
+                placeholder="0"
+                value="5"
+              />
+            </div>
+            <div class="input-group">
+              <label>Coupling</label>
+              <input
+                type="number"
+                id="couplingDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Reducer</label>
+              <input
+                type="number"
+                id="reducerDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+            <div class="input-group">
+              <label>Reducer (Tapered)</label>
+              <input
+                type="number"
+                id="reducerTaperedDischarge"
+                step="1"
+                placeholder="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Injector Parameters -->
+        <div class="section">
+          <h3 class="section-title">Injector Parameters</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>P Injector Loss (bar)</label>
+              <input
+                type="number"
+                id="pInjectorLoss"
+                step="1"
+                placeholder="0"
+                value="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Dosing Configuration -->
+        <div class="section">
+          <h3 class="section-title">Dosing Configuration</h3>
+          <div id="dosingPointsContainer"></div>
+        </div>
+        <!-- BOQ Configuration -->
+        <div class="section">
+          <h3 class="section-title">BOQ Configuration</h3>
+
+          <div class="input-grid">
+            <div class="input-group">
+              <label>No of Working System</label>
+              <input type="number" id="workingSystem" value="1" min="1" />
+            </div>
+
+            <div class="input-group">
+              <label>No of Standby System</label>
+              <input type="number" id="standbySystem" value="1" min="0" />
+            </div>
+
+            <div class="input-group">
+              <label>CS Gas Line Length (m)</label>
+              <input type="number" id="csGasLineLength" value="6" />
+            </div>
+
+            <div class="input-group">
+              <label>UPVC Gas Line Length (m)</label>
+              <input type="number" id="upvcGasLineLength" value="6" />
+            </div>
+
+            <div class="input-group">
+              <label>Solution Line Length (m) (Client Scope)</label>
+              <input type="number" id="solutionLineClientScope" value="90" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculation Constants -->
+        <div class="section">
+          <h3 class="section-title">Calculation Constants</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Molecular Weight</label>
+              <input
+                type="number"
+                id="molecularWeight"
+                step="0.01"
+                value="70.9"
+              />
+            </div>
+            <div class="input-group">
+              <label>Ambient Temp</label>
+              <input type="number" id="ambientTemp" step="0.01" value="30" />
+            </div>
+            <div class="input-group">
+              <label>Pressure Gauge</label>
+              <input
+                type="number"
+                id="pressureGauge"
+                step="0.01"
+                value="-0.5"
+              />
+            </div>
+            <div class="input-group">
+              <label>PG Gas Line</label>
+              <input type="number" id="pgGasLine" step="0.01" value="9" />
+            </div>
+            <div class="input-group">
+              <label>Temp Gas Line</label>
+              <input type="number" id="tempGasLine" step="0.01" value="30" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Design Report Remark -->
+        <div class="section">
+          <h3 class="section-title">Design Report Remark</h3>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Remark</label>
+              <textarea
+                id="designReportRemark"
+                placeholder="Enter any assumptions, clarifications, or client-specific notes for the generated design report"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container">
+          <button class="btn" onclick="calculate()">Calculate Results</button>
+          <button
+            class="btn"
+            style="
+              background: linear-gradient(135deg, #ff3366 0%, #ff6b9d 100%);
+            "
+            onclick="resetForm()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <h2 class="results-title">Calculation Results</h2>
+        <div class="result-grid" id="mainResults"></div>
+        <div class="diffuser-results" id="diffuserResults"></div>
+        <div id="boqResults"></div>
+      </div>
+    </div>
+
+    <script>
+      const DEFAULT_CONSTANTS = {
+        molecularWeight: 70.9,
+        ambientTemp: 30,
+        pressureGauge: -0.5,
+        pgGasLine: 9,
+        tempGasLine: 30,
+      };
+
+      // Generate dosing points inputs
+      document
+        .getElementById("noOfDosingPoints")
+        .addEventListener("change", function () {
+          generateDosingPointsInputs(parseInt(this.value) || 1);
+        });
+
+      function generateDosingPointsInputs(count) {
+        const container = document.getElementById("dosingPointsContainer");
+        container.innerHTML = "";
+
+        for (let i = 1; i <= count; i++) {
+          const dosingPoint = document.createElement("div");
+          dosingPoint.className = "dosing-point";
+          dosingPoint.innerHTML = `
+                    <div class="dosing-point-title">Dosing Point ${i}</div>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Dosage (ppm)</label>
+                            <input type="number" id="dosage_${i}" step="1" placeholder="0" value="4">
+                        </div>
+                        <div class="input-group">
+                            <label>Demand (ppm)</label>
+                            <input type="number" id="demand_${i}" step="0.01" placeholder="0" >
+                        </div>
+                        <div class="input-group">
+                            <label>Residual (ppm)</label>
+                            <input type="number" id="residual_${i}" step="0.01" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Solution Strength (ppm)</label>
+                            <input type="number" id="solutionStrength_${i}" step="1" placeholder="0" value="2000">
+                        </div>
+                        <div class="input-group">
+                            <label>Input Velocity Diffuser (m/s)</label>
+                            <input type="number" id="velocityDiffuser_${i}" step="1" placeholder="0" value="0.4">
+                        </div>
+                        <div class="input-group">
+                            <label>Input Velocity Diffuser Hole (m/s)</label>
+                            <input type="number" id="velocityDiffuserHole_${i}" step="1" placeholder="0" value="3.5">
+                        </div>
+                        <div class="input-group">
+                            <label>Diffuser Line Size (inch)</label>
+                            <input type="number" id="diffuserLineSize_${i}" step="0.01" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Diffuser Pipe Length (m)</label>
+                            <input type="number" id="diffuserPipeLength_${i}" step="0.01" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Hsubmergence (m)</label>
+                            <input type="number" id="hSubmergence_${i}" step="0.01" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Diameter of Hole (mm)</label>
+                            <input type="number" id="diameterHole_${i}" step="1" placeholder="0" value="6">
+                        </div>
+                        <div class="input-group">
+                            <label>C-C Spacing along Length (mm)</label>
+                            <input type="number" id="ccSpacingLength_${i}" step="1" placeholder="0" value="75">
+                        </div>
+                        <div class="input-group">
+                            <label>Margin Space on Both Sides (mm)</label>
+                            <input type="number" id="marginSpace_${i}" step="0.01" placeholder="0" value="50">
+                        </div>
+                    </div>
+                `;
+          container.appendChild(dosingPoint);
+        }
+      }
+
+      // Initialize with 1 dosing point
+      generateDosingPointsInputs(1);
+
+      function getInputValue(id) {
+        const value = parseFloat(document.getElementById(id).value);
+        return isNaN(value) ? 0 : value;
+      }
+
+      function getInputValueOrDefault(id, defaultValue) {
+        const input = document.getElementById(id);
+        if (!input || input.value === "") return defaultValue;
+        const value = parseFloat(input.value);
+        return isNaN(value) ? defaultValue : value;
+      }
+
+      function convertFlowRateToM3Hr(value, unit) {
+        if (unit === "mld") return (value * 1000) / 24;
+        if (unit === "ltrhr") return value / 1000;
+        return value;
+      }
+
+      function getFlowRateM3Hr() {
+        const flowRateInput = getInputValue("flowRateM3");
+        const flowRateUnit =
+          document.getElementById("flowRateUnit")?.value || "m3hr";
+        const flowRateM3 = convertFlowRateToM3Hr(flowRateInput, flowRateUnit);
+        const convertedInput = document.getElementById("flowRateM3Converted");
+
+        if (convertedInput) {
+          convertedInput.value = flowRateM3 > 0 ? flowRateM3.toString() : "";
+        }
+
+        return flowRateM3;
+      }
+
+      document
+        .getElementById("flowRateM3")
+        .addEventListener("input", getFlowRateM3Hr);
+      document
+        .getElementById("flowRateUnit")
+        .addEventListener("change", getFlowRateM3Hr);
+
+      function roundUpToQuarter(value) {
+        const decimal = value - Math.floor(value);
+        if (decimal === 0) return value;
+        if (decimal <= 0.25) return Math.floor(value) + 0.25;
+        if (decimal <= 0.5) return Math.floor(value) + 0.5;
+        if (decimal <= 0.75) return Math.floor(value) + 0.75;
+        return Math.ceil(value);
+      }
+
+      function roundSystemCapacity(value) {
+        if (value <= 0) return 0;
+        if (value <= 1) return 1;
+        if (value <= 2) return 2;
+        return Math.ceil(value / 5) * 5;
+      }
+
+      function calculateFrictionFactor(reynoldsNumber, relativeRoughness) {
+        const f4000 =
+          0.25 /
+          Math.pow(
+            Math.log10(
+              relativeRoughness / 3.7 +
+                5.74 / Math.pow(4000, 0.9) -
+                (5.74 / Math.pow(4000, 0.9) - 6.09 / Math.pow(4000, 1.1109)) /
+                  (1 + 0.0002 * Math.pow(4000 * relativeRoughness, 1.5)),
+            ),
+            2,
+          );
+
+        if (reynoldsNumber < 2000) {
+          return 64 / reynoldsNumber;
+        } else if (reynoldsNumber >= 2000 && reynoldsNumber <= 4000) {
+          return (
+            64 / 2000 + ((reynoldsNumber - 2000) * (f4000 - 64 / 2000)) / 2000
+          );
+        } else {
+          return (
+            0.25 /
+            Math.pow(
+              Math.log10(
+                relativeRoughness / 3.7 +
+                  5.74 / Math.pow(reynoldsNumber, 0.9) -
+                  (5.74 / Math.pow(reynoldsNumber, 0.9) -
+                    6.09 / Math.pow(reynoldsNumber, 1.1109)) /
+                    (1 +
+                      0.0002 *
+                        Math.pow(reynoldsNumber * relativeRoughness, 1.5)),
+              ),
+              2,
+            )
+          );
+        }
+      }
+
+      function findLargestDivisor(num) {
+        const sqrt = Math.sqrt(num);
+        for (let i = Math.floor(sqrt); i >= 1; i--) {
+          if (num % i === 0) {
+            return i;
+          }
+        }
+        return 1;
+      }
+
+      function calculate() {
+        try {
+          // Clear errors
+          document.getElementById("errorContainer").innerHTML = "";
+
+          // Get basic inputs
+          const workingTime = getInputValue("workingTime");
+          const flowRateM3 = getFlowRateM3Hr();
+          const manualSystemCapacity = getInputValue("systemCapacityInput");
+          const manualTonnerRequirement = getInputValue(
+            "tonnerRequirementInput",
+          );
+          const noOfDosingPoints =
+            parseInt(document.getElementById("noOfDosingPoints").value) || 1;
+          const workingSystem = getInputValue("workingSystem");
+
+          const standbySystem = getInputValue("standbySystem");
+
+          const totalSystem = workingSystem + standbySystem;
+
+          const csGasLineLength = getInputValue("csGasLineLength");
+
+          const upvcGasLineLength = getInputValue("upvcGasLineLength");
+
+          const solutionLineClientScope = getInputValue(
+            "solutionLineClientScope",
+          );
+          const molecularWeight = getInputValueOrDefault(
+            "molecularWeight",
+            DEFAULT_CONSTANTS.molecularWeight,
+          );
+          const ambientTemp = getInputValueOrDefault(
+            "ambientTemp",
+            DEFAULT_CONSTANTS.ambientTemp,
+          );
+          const pressureGauge = getInputValueOrDefault(
+            "pressureGauge",
+            DEFAULT_CONSTANTS.pressureGauge,
+          );
+          const pgGasLine = getInputValueOrDefault(
+            "pgGasLine",
+            DEFAULT_CONSTANTS.pgGasLine,
+          );
+          const tempGasLine = getInputValueOrDefault(
+            "tempGasLine",
+            DEFAULT_CONSTANTS.tempGasLine,
+          );
+
+          // Validation
+          if (workingTime <= 0) {
+            throw new Error("Working Time must be greater than 0");
+          }
+          if (flowRateM3 === 0 && manualSystemCapacity === 0) {
+            throw new Error(
+              "Either Flow Rate or System Capacity must be filled",
+            );
+          }
+
+          // Calculate Required Chlorine and Chlorination Capacity for each dosing point
+          let chlorinationCapacities = [];
+          let requiredChlorines = [];
+          let hSubmergenceValues = [];
+
+          for (let i = 1; i <= noOfDosingPoints; i++) {
+            const dosage = getInputValue(`dosage_${i}`);
+            const demand = getInputValue(`demand_${i}`);
+            const residual = getInputValue(`residual_${i}`);
+            const hSubmergence = getInputValue(`hSubmergence_${i}`);
+
+            let requiredChlorine = 0;
+
+            if (dosage > 0) {
+              requiredChlorine = flowRateM3 * dosage;
+            } else if (demand > 0 || residual > 0) {
+              requiredChlorine = flowRateM3 * (demand + residual);
+            }
+
+            if (requiredChlorine <= 0 && manualSystemCapacity > 0) {
+              requiredChlorine =
+                (manualSystemCapacity * 125 * workingTime) /
+                (3 * noOfDosingPoints);
+            }
+
+            requiredChlorines.push(requiredChlorine);
+            hSubmergenceValues.push(hSubmergence);
+            const chlorinationCapacity =
+              (requiredChlorine * 3) / 125 / workingTime;
+            chlorinationCapacities.push(chlorinationCapacity);
+          }
+
+          // System Capacity (1, 2, then multiples of 5)
+          const sumCapacity = chlorinationCapacities.reduce((a, b) => a + b, 0);
+          const calculatedSystemCapacity = roundSystemCapacity(sumCapacity);
+          const systemCapacity =
+            manualSystemCapacity > 0
+              ? manualSystemCapacity
+              : calculatedSystemCapacity;
+
+          // Motive Water Flow Rate
+          const motiveWaterFlowRate = systemCapacity / 2;
+
+          // Tonner Requirement
+          const calculatedTonnerRequirement = Math.ceil(
+            (systemCapacity * workingTime) / 31,
+          );
+          const tonnerRequirement =
+            manualTonnerRequirement > 0
+              ? manualTonnerRequirement
+              : calculatedTonnerRequirement;
+
+          // Vacuum gas flow rate
+          const vacuumGasFlowRate =
+            (0.08314 * (ambientTemp + 273.15) * systemCapacity) /
+            ((pressureGauge + 1.013) * molecularWeight);
+
+          // Velocity inputs
+          let velocityVacuum = getInputValue("velocityVacuum");
+          let velocityGas = getInputValue("velocityGas");
+          let velocitySuction = getInputValue("velocitySuction");
+          let velocityDischarge = getInputValue("velocityDischarge");
+          let velocitySolution = getInputValue("velocitySolution");
+
+          // Calculate default velocities if not provided
+          if (velocityGas <= 0) {
+            velocityGas = velocityVacuum > 0 ? velocityVacuum : 1;
+          }
+          if (velocityVacuum <= 0) {
+            velocityVacuum = velocityGas > 0 ? velocityGas : 1;
+          }
+          if (velocitySuction === 0) {
+            velocitySuction = 0.95 * Math.pow(motiveWaterFlowRate, 0.45);
+          }
+          if (velocityDischarge === 0) {
+            velocityDischarge = 0.95 * Math.pow(motiveWaterFlowRate, 0.45);
+          }
+          if (velocitySolution === 0) {
+            velocitySolution = 0.95 * Math.pow(systemCapacity / 2, 0.45);
+          }
+
+          // Line Sizes
+          const vacuumLineSize = roundUpToQuarter(
+            Math.sqrt(vacuumGasFlowRate / (velocityVacuum * 2826)) * 39.37,
+          );
+          const gasLineSize =
+            39.37 *
+            Math.sqrt(
+              (4 * systemCapacity * 0.08314 * (tempGasLine + 303.15)) /
+                (3.14 *
+                  molecularWeight *
+                  3600 *
+                  (pgGasLine + 1.013) *
+                  velocityGas),
+            );
+          const suctionLineSize = roundUpToQuarter(
+            Math.sqrt(motiveWaterFlowRate / (velocitySuction * 2826)) * 39.37,
+          );
+          const dischargeLineSize = roundUpToQuarter(
+            Math.sqrt(motiveWaterFlowRate / (velocityDischarge * 2826)) * 39.37,
+          );
+
+          // Suction Line Calculations
+          const reynoldsSuction =
+            (25400 * motiveWaterFlowRate) / (1.8232 * suctionLineSize);
+          const relativeRoughnessSuction =
+            getInputValue("roughnessSuction") / (suctionLineSize * 25.4);
+          const frictionFactorSuction = calculateFrictionFactor(
+            reynoldsSuction,
+            relativeRoughnessSuction,
+          );
+
+          // K suction
+          const kSuction =
+            getInputValue("elbow90Suction") * 0.9 +
+            getInputValue("elbow45Suction") * 0.35 +
+            getInputValue("elbowLRSuction") * 0.25 +
+            getInputValue("teeStraightSuction") * 0.6 +
+            getInputValue("teeBranchSuction") * 1.9 +
+            getInputValue("gateValveSuction") * 0.175 +
+            getInputValue("ballValveSuction") * 0.075 +
+            getInputValue("manifoldValveSuction") * 1.5 +
+            getInputValue("globeValveSuction") * 9 +
+            getInputValue("swingCheckSuction") * 2.25 +
+            getInputValue("butterflyValveSuction") * 0.85 +
+            getInputValue("diaphragmValveSuction") * 2.75 +
+            getInputValue("nrvSuction") * 2.5 +
+            getInputValue("flowmeterSuction") * 3 +
+            getInputValue("unionSuction") * 0.09 +
+            getInputValue("connectorSuction") * 0.4 +
+            getInputValue("couplingSuction") * 0.06 +
+            getInputValue("reducerSuction") * 0.75 +
+            getInputValue("reducerTaperedSuction") * 0.15;
+
+          // Suction NPSH Available
+          const suctionNPSH =
+            10.09 +
+            10.19368 * getInputValue("pSuction") +
+            getInputValue("zSuctionSurface") -
+            getInputValue("zSuctionCenterline") -
+            (frictionFactorSuction *
+              getInputValue("lengthSuction") *
+              motiveWaterFlowRate) /
+              (0.90869 * Math.pow(suctionLineSize, 3)) +
+            (kSuction * motiveWaterFlowRate) /
+              (35.7752 * Math.pow(suctionLineSize, 2));
+
+          // Discharge Line Calculations
+          const reynoldsDischarge =
+            (25400 * motiveWaterFlowRate) / (1.8232 * dischargeLineSize);
+          const relativeRoughnessDischarge =
+            getInputValue("roughnessDischarge") / (dischargeLineSize * 25.4);
+          const frictionFactorDischarge = calculateFrictionFactor(
+            reynoldsDischarge,
+            relativeRoughnessDischarge,
+          );
+
+          // K discharge
+          const kDischarge =
+            getInputValue("elbow90Discharge") * 0.9 +
+            getInputValue("elbow45Discharge") * 0.35 +
+            getInputValue("elbowLRDischarge") * 0.25 +
+            getInputValue("teeStraightDischarge") * 0.6 +
+            getInputValue("teeBranchDischarge") * 1.9 +
+            getInputValue("gateValveDischarge") * 0.175 +
+            getInputValue("ballValveDischarge") * 0.075 +
+            getInputValue("manifoldValveDischarge") * 1.5 +
+            getInputValue("globeValveDischarge") * 9 +
+            getInputValue("swingCheckDischarge") * 2.25 +
+            getInputValue("butterflyValveDischarge") * 0.85 +
+            getInputValue("diaphragmValveDischarge") * 2.75 +
+            getInputValue("nrvDischarge") * 2.5 +
+            getInputValue("flowmeterDischarge") * 3 +
+            getInputValue("unionDischarge") * 0.09 +
+            getInputValue("connectorDischarge") * 0.4 +
+            getInputValue("couplingDischarge") * 0.06 +
+            getInputValue("reducerDischarge") * 0.75 +
+            getInputValue("reducerTaperedDischarge") * 0.15;
+
+          // Residual Dynamic Head
+          const residualDynamicHead =
+            10 *
+            ((frictionFactorDischarge *
+              getInputValue("lengthDischarge") *
+              motiveWaterFlowRate) /
+              (0.90869 * dischargeLineSize) +
+              (kDischarge * motiveWaterFlowRate) /
+                (35.7752 * Math.pow(dischargeLineSize, 2)) +
+              10.19368 * getInputValue("pDischarge") +
+              getInputValue("zDischargeSurface") -
+              getInputValue("zDischargeCenterline"));
+          const hSubmergence = Math.max(...hSubmergenceValues, 0);
+          const totalDynamicHead = residualDynamicHead + hSubmergence;
+
+          // Injector Nozzle Size
+          const pInjectorLoss = getInputValue("pInjectorLoss");
+          const injectorNozzleSize = Math.sqrt(
+            (57.07 * motiveWaterFlowRate) /
+              Math.sqrt(2 * (pInjectorLoss - pressureGauge)),
+          );
+
+          // Solution Line Size
+          const solutionLineSize = roundUpToQuarter(
+            39.37 * Math.sqrt(systemCapacity / (5652 * velocitySolution)),
+          );
+
+          // Display main results
+          displayMainResults({
+            systemCapacity,
+            motiveWaterFlowRate,
+            tonnerRequirement,
+            vacuumGasFlowRate,
+            gasLineSize,
+            vacuumLineSize,
+            suctionLineSize,
+            dischargeLineSize,
+            suctionNPSH,
+            totalDynamicHead,
+            injectorNozzleSize,
+            solutionLineSize,
+          });
+
+          //  diffuser results for each dosing point
+          displayDiffuserResults(
+            noOfDosingPoints,
+            requiredChlorines,
+            workingTime,
+            motiveWaterFlowRate,
+            solutionLineSize,
+          );
+          const boqData = generateBOQDataV2({
+            tonnerRequirement,
+
+            totalSystem,
+
+            noOfDosingPoints,
+            workingTime,
+            systemCapacity,
+            gasLineSize,
+            vacuumLineSize,
+            suctionLineSize,
+            dischargeLineSize,
+            solutionLineSize,
+            diffuserLineSizes: Array.from(
+              { length: noOfDosingPoints },
+              (_, index) => getInputValue(`diffuserLineSize_${index + 1}`),
+            ),
+            diffuserPipeLengths: Array.from(
+              { length: noOfDosingPoints },
+              (_, index) => getInputValue(`diffuserPipeLength_${index + 1}`),
+            ),
+
+            csGasLineLength,
+
+            upvcGasLineLength,
+
+            solutionLineClientScope,
+
+            lengthDischarge: getInputValue("lengthDischarge"),
+          });
+
+          displayBOQ(boqData);
+
+          function generateBOQData(data) {
+            const {
+              tonnerRequirement,
+              totalSystem,
+              noOfDosingPoints,
+              workingTime,
+              systemCapacity,
+              gasLineSize,
+              vacuumLineSize,
+              suctionLineSize,
+              dischargeLineSize,
+              solutionLineSize,
+              diffuserLineSizes,
+              diffuserPipeLengths,
+              csGasLineLength,
+              upvcGasLineLength,
+              solutionLineClientScope,
+              lengthDischarge,
+            } = data;
+
+            const tonnerAreaQty =
+              Math.ceil((workingTime * systemCapacity) / 930) * 2;
+            const fmtSize = (value) => `${Number(value || 0).toFixed(2)} inch`;
+            const diffuserLineSizeText = (diffuserLineSizes || [])
+              .map((value, index) => `DP${index + 1}: ${fmtSize(value)}`)
+              .join(", ");
+            const diffuserPipeLengthTotal =
+              (diffuserPipeLengths || []).reduce(
+                (sum, value) => sum + (Number(value) || 0),
+                0,
+              ) * totalSystem;
+            const row = (slNo, item, specification, moc, qty, unit, price) => ({
+              slNo,
+              item,
+              specification,
+              moc,
+              qty,
+              unit,
+              price,
+            });
+
+            return [
+              // 1. TONNER AREA
+
+              {
+                area: "1. TONNER AREA",
+                items: [
+                  row(
+                    1,
+                    "Tonner Roller Support",
+                    "With rail arrangement",
+                    "MS",
+                    tonnerAreaQty,
+                    "Set",
+                    6750,
+                  ),
+                  row(
+                    2,
+                    "Chlorine Tonner",
+                    "900 kg",
+                    "PESO Approved",
+                    tonnerRequirement,
+                    "No",
+                    145000,
+                  ),
+                  row(
+                    3,
+                    "Half Hood",
+                    "Tonner safety hood",
+                    "FRP",
+                    tonnerAreaQty,
+                    "No",
+                    14500,
+                  ),
+                  row(
+                    4,
+                    "Additional Ton Valve with Yoke",
+                    "Chlorine service",
+                    "Monel/PTFE",
+                    tonnerAreaQty,
+                    "Set",
+                    5760,
+                  ),
+                  row(
+                    5,
+                    "Flexible Copper Coil Tube",
+                    "Gas connection",
+                    "Copper/PTFE lined",
+                    tonnerAreaQty,
+                    "No",
+                    4000,
+                  ),
+                  row(
+                    6,
+                    "Manifold Valve",
+                    "Chlorine compatible",
+                    "Monel",
+                    tonnerAreaQty,
+                    "No",
+                    4500,
+                  ),
+                  row(
+                    7,
+                    "Tonner Manifold System",
+                    "Auto/manual changeover",
+                    "SS/Monel",
+                    1,
+                    "Set",
+                    75000,
+                  ),
+                  row(
+                    8,
+                    "Pressure Gauge",
+                    "0-25 bar",
+                    "SS",
+                    tonnerAreaQty,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    9,
+                    "Pressure Transmitter",
+                    "4-20 mA",
+                    "SS",
+                    tonnerAreaQty,
+                    "No",
+                    18540,
+                  ),
+                  row(
+                    10,
+                    "Isolation Valve",
+                    "Size 1/2 inch",
+                    "Monel/PTFE",
+                    tonnerAreaQty * 2,
+                    "Nos",
+                    14500,
+                  ),
+                  row(
+                    11,
+                    "Auto Shut-off/Change-over Valve",
+                    "Safety interlock",
+                    "Monel/PTFE",
+                    1,
+                    "No",
+                    45000,
+                  ),
+                  row(
+                    12,
+                    "Flexible Connector",
+                    "Secondary connection",
+                    "SS/PTFE",
+                    "As req",
+                    "No",
+                    2500,
+                  ),
+                  row(
+                    13,
+                    "Teflon Gaskets",
+                    "Spare",
+                    "Teflon",
+                    "As req",
+                    "Nos",
+                    120,
+                  ),
+                  row(
+                    14,
+                    "Tonner Stand Anchor Bolts",
+                    "M16/M20",
+                    "GI/SS",
+                    "As req",
+                    "Nos",
+                    100,
+                  ),
+                  row(
+                    15,
+                    "Fasteners (Bolt/Nut/Washer)",
+                    "Complete set",
+                    "SS/GI",
+                    "As req",
+                    "Lot",
+                    100,
+                  ),
+                ],
+              },
+
+              // 2. CHLORINATOR AREA
+
+              {
+                area: "2. CHLORINATOR AREA",
+                items: [
+                  {
+                    slNo: 16,
+                    item: "Gas Filter",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 22000,
+                  },
+
+                  {
+                    slNo: 17,
+                    item: "Ball Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "Nos",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 18,
+                    item: "Pressure Reducing Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 22000,
+                  },
+
+                  {
+                    slNo: 19,
+                    item: "Pressure Gauge",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12450,
+                  },
+
+                  {
+                    slNo: 20,
+                    item: "Isolation Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 21,
+                    item: "Automatic Vacuum Regulator (AVR)",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 28500,
+                  },
+
+                  {
+                    slNo: 22,
+                    item: "Pressure Relief Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 6500,
+                  },
+
+                  {
+                    slNo: 23,
+                    item: "Chlorinator",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 24000,
+                  },
+
+                  {
+                    slNo: 24,
+                    item: "Rotameter",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12500,
+                  },
+
+                  {
+                    slNo: 25,
+                    item: "Flow Control Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12500,
+                  },
+
+                  {
+                    slNo: 26,
+                    item: "Pressure Regulator",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 18500,
+                  },
+
+                  {
+                    slNo: 27,
+                    item: "Vacuum Relief Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 6500,
+                  },
+
+                  {
+                    slNo: 28,
+                    item: "Vacuum Gauge",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12450,
+                  },
+
+                  {
+                    slNo: 29,
+                    item: "Drain Relief Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 6500,
+                  },
+
+                  {
+                    slNo: 30,
+                    item: "Non Return Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 6500,
+                  },
+
+                  {
+                    slNo: 31,
+                    item: "Ball Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "Nos",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 32,
+                    item: "Interconnecting Pipe",
+                    logic: "CS Gas Line Length",
+                    qty: csGasLineLength,
+                    unit: "M",
+                    price: 1650,
+                  },
+
+                  {
+                    slNo: 33,
+                    item: "Interconnecting Pipe",
+                    logic: "UPVC Gas Line Length",
+                    qty: upvcGasLineLength,
+                    unit: "M",
+                    price: 1200,
+                  },
+
+                  {
+                    slNo: 34,
+                    item: "Tube fittings & ferrules",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Lot",
+                    price: 20000,
+                  },
+
+                  {
+                    slNo: 35,
+                    item: "Pipe Supports & Clamps",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 40000,
+                  },
+                ],
+              },
+
+              // 3. BOOSTER PUMP AREA
+
+              {
+                area: "3. BOOSTER PUMP AREA",
+                items: [
+                  {
+                    slNo: 36,
+                    item: "Basket Type Strainer",
+                    logic: "Default = 1",
+                    qty: 1,
+                    unit: "No",
+                    price: 34000,
+                  },
+
+                  {
+                    slNo: 37,
+                    item: "Butterfly Valve (Inlet)",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 28500,
+                  },
+
+                  {
+                    slNo: 38,
+                    item: "Butterfly Valve (Outlet)",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 26500,
+                  },
+
+                  {
+                    slNo: 39,
+                    item: "Booster Pump",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 165000,
+                  },
+
+                  {
+                    slNo: 40,
+                    item: "Local Push Button Station",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 41,
+                    item: "Pressure Gauge",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12450,
+                  },
+
+                  {
+                    slNo: 42,
+                    item: "Isolation Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "Nos",
+                    price: 6000,
+                  },
+
+                  {
+                    slNo: 43,
+                    item: "Check Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 12450,
+                  },
+
+                  {
+                    slNo: 44,
+                    item: "Pump Suction Pipe",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "M",
+                    price: 1850,
+                  },
+
+                  {
+                    slNo: 45,
+                    item: "Pump Discharge Pipe",
+                    logic: "Discharge Pipe Line Length",
+                    qty: lengthDischarge,
+                    unit: "M",
+                    price: 1850,
+                  },
+
+                  {
+                    slNo: 46,
+                    item: "Flexible Coupling",
+                    logic: "If required",
+                    qty: 0,
+                    unit: "Set",
+                    price: 8500,
+                  },
+
+                  {
+                    slNo: 47,
+                    item: "Anti-vibration Pads",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Set",
+                    price: 8500,
+                  },
+
+                  {
+                    slNo: 48,
+                    item: "Pump Foundation Bolts",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 1500,
+                  },
+                ],
+              },
+
+              // 4. INJECTOR / DOSING AREA
+
+              {
+                area: "4. INJECTOR / DOSING AREA",
+                items: [
+                  {
+                    slNo: 49,
+                    item: "Injector",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 28500,
+                  },
+
+                  {
+                    slNo: 50,
+                    item: "Check Valve",
+                    logic: "No of Working + Standby System",
+                    qty: totalSystem,
+                    unit: "No",
+                    price: 18500,
+                  },
+
+                  {
+                    slNo: 51,
+                    item: "Diaphragm Valve",
+                    logic: "( No of Working + Standby System ) * 2",
+                    qty: totalSystem * 2,
+                    unit: "No",
+                    price: 24000,
+                  },
+
+                  {
+                    slNo: 52,
+                    item: "Solution Pipe (Injector to Diffuser)",
+                    logic:
+                      "Discharge Pipe Line Length - solution line length (client scope)",
+                    qty: Math.max(lengthDischarge - solutionLineClientScope, 0),
+                    unit: "M",
+                    price: 1850,
+                  },
+
+                  {
+                    slNo: "52A",
+                    item: "Solution Pipe (Client Scope)",
+                    logic: "solution line length (client scope)",
+                    qty: solutionLineClientScope,
+                    unit: "M",
+                    price: 0,
+                  },
+
+                  {
+                    slNo: 53,
+                    item: "Elbows / Tees / Reducers",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Lot",
+                    price: 20000,
+                  },
+
+                  {
+                    slNo: 54,
+                    item: "Unions",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 3000,
+                  },
+
+                  {
+                    slNo: 55,
+                    item: "Pipe Clamps",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 100,
+                  },
+
+                  {
+                    slNo: 56,
+                    item: "U-Bolts",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 100,
+                  },
+
+                  {
+                    slNo: 57,
+                    item: "Threaded Rods",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "M",
+                    price: 200,
+                  },
+
+                  {
+                    slNo: 58,
+                    item: "Anchor Fasteners",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 150,
+                  },
+
+                  {
+                    slNo: 59,
+                    item: "Gaskets",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 20,
+                  },
+
+                  {
+                    slNo: 60,
+                    item: "PTFE Tape",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 120,
+                  },
+                ],
+              },
+
+              // 5. ELECTRICAL & INSTRUMENTATION
+
+              {
+                area: "5. ELECTRICAL & INSTRUMENTATION",
+                items: [
+                  {
+                    slNo: 61,
+                    item: "Control Panel",
+                    logic: "Fixed = 1",
+                    qty: 1,
+                    unit: "No",
+                    price: 545000,
+                  },
+
+                  {
+                    slNo: 62,
+                    item: "Chlorine Leak Detector (2 Sensors)",
+                    logic: "Fixed = 1",
+                    qty: 1,
+                    unit: "Set",
+                    price: 64500,
+                  },
+
+                  {
+                    slNo: 63,
+                    item: "Hooter + Beacon",
+                    logic: "Fixed = 1",
+                    qty: 1,
+                    unit: "Set",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 64,
+                    item: "FRC Analyser",
+                    logic: "Fixed = 1",
+                    qty: 1,
+                    unit: "Set",
+                    price: 0,
+                  },
+
+                  {
+                    slNo: 65,
+                    item: "Power Cable",
+                    logic: "As required",
+                    qty: 40,
+                    unit: "M",
+                    price: 240,
+                  },
+
+                  {
+                    slNo: 66,
+                    item: "Control Cable",
+                    logic: "As required",
+                    qty: 20,
+                    unit: "M",
+                    price: 300,
+                  },
+
+                  {
+                    slNo: 67,
+                    item: "Instrument Cable",
+                    logic: "As required",
+                    qty: 40,
+                    unit: "M",
+                    price: 300,
+                  },
+
+                  {
+                    slNo: 68,
+                    item: "Cable Tray",
+                    logic: "As required",
+                    qty: 60,
+                    unit: "M",
+                    price: 390,
+                  },
+
+                  {
+                    slNo: 69,
+                    item: "Cable Tray Supports",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Set",
+                    price: 1200,
+                  },
+
+                  {
+                    slNo: 70,
+                    item: "Cable Glands",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 650,
+                  },
+
+                  {
+                    slNo: 71,
+                    item: "Cable Lugs",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 15000,
+                  },
+
+                  {
+                    slNo: 72,
+                    item: "Ferrules",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 8000,
+                  },
+
+                  {
+                    slNo: 73,
+                    item: "Junction Boxes",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 15000,
+                  },
+
+                  {
+                    slNo: 74,
+                    item: "Earthing Cable (Client Scope)",
+                    logic: "Earthing route length",
+                    qty: 0,
+                    unit: "M",
+                    price: 0,
+                  },
+                ],
+              },
+
+              // 6. STRUCTURAL + CIVIL + GENERAL
+
+              {
+                area: "6. STRUCTURAL + CIVIL + GENERAL",
+                items: [
+                  {
+                    slNo: 75,
+                    item: "Base Frame / Skid",
+                    logic: "Fixed = 1",
+                    qty: 1,
+                    unit: "Set",
+                    price: 240000,
+                  },
+
+                  {
+                    slNo: 76,
+                    item: "Equipment Supports",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Kg",
+                    price: 145000,
+                  },
+
+                  {
+                    slNo: 77,
+                    item: "Grouting Material",
+                    logic: "Lot",
+                    qty: 1,
+                    unit: "Lot",
+                    price: 0,
+                  },
+
+                  {
+                    slNo: 78,
+                    item: "Painting",
+                    logic: "Lot",
+                    qty: 1,
+                    unit: "Lot",
+                    price: 0,
+                  },
+
+                  {
+                    slNo: 79,
+                    item: "Name Plates",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 8500,
+                  },
+
+                  {
+                    slNo: 80,
+                    item: "Danger Boards",
+                    logic: "As required",
+                    qty: 0,
+                    unit: "Nos",
+                    price: 25000,
+                  },
+                ],
+              },
+
+              // 7. DIFFUSER AREA
+
+              {
+                area: "7. DIFFUSER AREA",
+                items: [
+                  {
+                    slNo: 81,
+                    item: "Diffuser",
+                    logic: "Equal to number of dosing points",
+                    qty: noOfDosingPoints,
+                    unit: "No",
+                    price: 14500,
+                  },
+
+                  {
+                    slNo: 82,
+                    item: "Rotameter",
+                    logic: "Equal to number of dosing points",
+                    qty: noOfDosingPoints,
+                    unit: "No",
+                    price: 0,
+                  },
+                ],
+              },
+            ];
+          }
+
+          function generateBOQDataV2(data) {
+            const {
+              tonnerRequirement,
+              totalSystem,
+              noOfDosingPoints,
+              workingTime,
+              systemCapacity,
+              gasLineSize,
+              vacuumLineSize,
+              suctionLineSize,
+              dischargeLineSize,
+              solutionLineSize,
+              diffuserLineSizes,
+              diffuserPipeLengths,
+              csGasLineLength,
+              upvcGasLineLength,
+              solutionLineClientScope,
+              lengthDischarge,
+            } = data;
+            const tonnerAreaQty =
+              Math.ceil((workingTime * systemCapacity) / 930) * 2;
+            const size = (value) => `${Number(value || 0).toFixed(2)} inch`;
+            const diffuserSize =
+              (diffuserLineSizes || [])
+                .map((value, index) => `DP${index + 1}: ${size(value)}`)
+                .join(", ") || "0.00 inch";
+            const diffuserLength =
+              (diffuserPipeLengths || []).reduce(
+                (sum, value) => sum + (Number(value) || 0),
+                0,
+              ) * totalSystem;
+            const row = (slNo, item, specification, moc, qty, unit, price) => ({
+              slNo,
+              item,
+              specification,
+              moc,
+              qty,
+              unit,
+              price,
+            });
+
+            return [
+              {
+                area: "1. TONNER AREA",
+                items: [
+                  row(
+                    1,
+                    "Tonner Roller Support",
+                    "With rail arrangement",
+                    "MS",
+                    tonnerAreaQty,
+                    "Set",
+                    6750,
+                  ),
+                  row(
+                    2,
+                    "Chlorine Tonner",
+                    "900 kg",
+                    "PESO Approved",
+                    tonnerRequirement,
+                    "No",
+                    145000,
+                  ),
+                  row(
+                    3,
+                    "Half Hood",
+                    "Tonner safety hood",
+                    "FRP",
+                    tonnerAreaQty,
+                    "No",
+                    14500,
+                  ),
+                  row(
+                    4,
+                    "Additional Ton Valve with Yoke",
+                    "Chlorine service",
+                    "Monel/PTFE",
+                    tonnerAreaQty,
+                    "Set",
+                    5760,
+                  ),
+                  row(
+                    5,
+                    "Flexible Copper Coil Tube",
+                    "Gas connection",
+                    "Copper/PTFE lined",
+                    tonnerAreaQty,
+                    "No",
+                    4000,
+                  ),
+                  row(
+                    6,
+                    "Manifold Valve",
+                    "Chlorine compatible",
+                    "Monel",
+                    tonnerAreaQty,
+                    "No",
+                    4500,
+                  ),
+                  row(
+                    7,
+                    "Tonner Manifold System",
+                    "Auto/manual changeover",
+                    "SS/Monel",
+                    1,
+                    "Set",
+                    75000,
+                  ),
+                  row(
+                    8,
+                    "Pressure Gauge",
+                    "0-25 bar",
+                    "SS",
+                    tonnerAreaQty,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    9,
+                    "Pressure Transmitter",
+                    "4-20 mA",
+                    "SS",
+                    tonnerAreaQty,
+                    "No",
+                    18540,
+                  ),
+                  row(
+                    10,
+                    "Isolation Valve",
+                    "Size 1/2 inch",
+                    "Monel/PTFE",
+                    tonnerAreaQty * 2,
+                    "Nos",
+                    14500,
+                  ),
+                  row(
+                    11,
+                    "Auto Shut-off/Change-over Valve",
+                    "Safety interlock",
+                    "Monel/PTFE",
+                    1,
+                    "No",
+                    45000,
+                  ),
+                  row(
+                    12,
+                    "Flexible Connector",
+                    "Secondary connection",
+                    "SS/PTFE",
+                    "As req",
+                    "No",
+                    2500,
+                  ),
+                  row(
+                    13,
+                    "Teflon Gaskets",
+                    "Spare",
+                    "Teflon",
+                    "As req",
+                    "Nos",
+                    120,
+                  ),
+                  row(
+                    14,
+                    "Tonner Stand Anchor Bolts",
+                    "M16/M20",
+                    "GI/SS",
+                    "As req",
+                    "Nos",
+                    100,
+                  ),
+                  row(
+                    15,
+                    "Fasteners (Bolt/Nut/Washer)",
+                    "Complete set",
+                    "SS/GI",
+                    "As req",
+                    "Lot",
+                    100,
+                  ),
+                ],
+              },
+              {
+                area: "2. CHLORINATOR AREA",
+                items: [
+                  row(
+                    16,
+                    "Gas Filter",
+                    "Chlorine gas line",
+                    "SS/PTFE",
+                    totalSystem,
+                    "No",
+                    22000,
+                  ),
+                  row(
+                    17,
+                    "Ball Valve",
+                    `Size: ${size(gasLineSize)}`,
+                    "CS",
+                    totalSystem,
+                    "Nos",
+                    14500,
+                  ),
+                  row(
+                    18,
+                    "Pressure Reducing Valve",
+                    "Chlorine service",
+                    "Monel/PTFE",
+                    totalSystem,
+                    "No",
+                    22000,
+                  ),
+                  row(
+                    19,
+                    "Pressure Gauge",
+                    "Line monitoring",
+                    "SS",
+                    totalSystem,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    20,
+                    "Isolation Valve",
+                    "Size 1/2 inch",
+                    "Monel/PTFE",
+                    totalSystem,
+                    "No",
+                    14500,
+                  ),
+                  row(
+                    21,
+                    "Automatic Vacuum Regulator (AVR)",
+                    "To regulate vacuum from tonner",
+                    "PTFE",
+                    totalSystem,
+                    "No",
+                    28500,
+                  ),
+                  row(
+                    22,
+                    "Pressure Relief Valve",
+                    "Safety",
+                    "SS/PTFE",
+                    totalSystem,
+                    "No",
+                    6500,
+                  ),
+                  row(
+                    23,
+                    "Chlorinator",
+                    `${systemCapacity} Kg/hr`,
+                    "PVC/PTFE",
+                    totalSystem,
+                    "No",
+                    24000,
+                  ),
+                  row(
+                    24,
+                    "Rotameter",
+                    "Gas flow",
+                    "Acrylic/PVC",
+                    totalSystem,
+                    "No",
+                    12500,
+                  ),
+                  row(
+                    25,
+                    "Flow Control Valve",
+                    "Fine control",
+                    "PTFE",
+                    totalSystem,
+                    "No",
+                    12500,
+                  ),
+                  row(
+                    26,
+                    "Pressure Regulator",
+                    "Secondary control",
+                    "SS/PTFE",
+                    totalSystem,
+                    "No",
+                    18500,
+                  ),
+                  row(
+                    27,
+                    "Vacuum Relief Valve",
+                    "Safety",
+                    "PTFE",
+                    totalSystem,
+                    "No",
+                    6500,
+                  ),
+                  row(
+                    28,
+                    "Vacuum Gauge",
+                    "-1 to 0 bar",
+                    "SS",
+                    totalSystem,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    29,
+                    "Drain Relief Valve",
+                    "Drain line",
+                    "PVC",
+                    totalSystem,
+                    "No",
+                    6500,
+                  ),
+                  row(
+                    30,
+                    "Non Return Valve",
+                    `Size: ${size(vacuumLineSize)}`,
+                    "PTFE",
+                    totalSystem,
+                    "No",
+                    6500,
+                  ),
+                  row(
+                    31,
+                    "Ball Valve",
+                    `Size: ${size(vacuumLineSize)}`,
+                    "PVC/PTFE",
+                    totalSystem,
+                    "Nos",
+                    14500,
+                  ),
+                  row(
+                    32,
+                    "Interconnecting Pipe",
+                    `Size: ${size(gasLineSize)}`,
+                    "CS",
+                    csGasLineLength,
+                    "M",
+                    1650,
+                  ),
+                  row(
+                    33,
+                    "Interconnecting Pipe",
+                    `Size: ${size(vacuumLineSize)}`,
+                    "PTFE/PVC",
+                    upvcGasLineLength,
+                    "M",
+                    1200,
+                  ),
+                  row(
+                    34,
+                    "Tube fittings & ferrules",
+                    "Instrument connection",
+                    "SS/PTFE",
+                    "As req",
+                    "Lot",
+                    20000,
+                  ),
+                  row(
+                    35,
+                    "Pipe Supports & Clamps",
+                    "Chlorinator mounting",
+                    "GI/SS",
+                    "As req",
+                    "Nos",
+                    40000,
+                  ),
+                ],
+              },
+              {
+                area: "3. BOOSTER PUMP AREA",
+                items: [
+                  row(
+                    36,
+                    "Basket Type Strainer",
+                    "Water line",
+                    "UPVC/SS",
+                    1,
+                    "No",
+                    34000,
+                  ),
+                  row(
+                    37,
+                    "Butterfly Valve (Inlet)",
+                    `Size: ${size(suctionLineSize)}`,
+                    "CI/DI",
+                    totalSystem,
+                    "No",
+                    28500,
+                  ),
+                  row(
+                    38,
+                    "Butterfly Valve (Outlet)",
+                    `Size: ${size(dischargeLineSize)}`,
+                    "CI/DI",
+                    totalSystem,
+                    "No",
+                    26500,
+                  ),
+                  row(
+                    39,
+                    "Booster Pump",
+                    "5 m3/hr, 25 m head",
+                    "CI/SS",
+                    totalSystem,
+                    "No",
+                    165000,
+                  ),
+                  row(
+                    40,
+                    "Local Push Button Station",
+                    "Start/Stop",
+                    "Industrial",
+                    totalSystem,
+                    "No",
+                    14500,
+                  ),
+                  row(
+                    41,
+                    "Pressure Gauge",
+                    "0-16 bar",
+                    "SS",
+                    totalSystem,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    42,
+                    "Isolation Valve",
+                    "Size 1/2 inch",
+                    "UPVC/SS",
+                    totalSystem,
+                    "Nos",
+                    6000,
+                  ),
+                  row(
+                    43,
+                    "Check Valve",
+                    `Size: ${size(dischargeLineSize)}`,
+                    "CI/SS",
+                    totalSystem,
+                    "No",
+                    12450,
+                  ),
+                  row(
+                    44,
+                    "Pump Suction Pipe",
+                    `Size: ${size(suctionLineSize)}`,
+                    "MS/UPVC",
+                    totalSystem,
+                    "M",
+                    1850,
+                  ),
+                  row(
+                    45,
+                    "Pump Discharge Pipe",
+                    `Size: ${size(dischargeLineSize)}`,
+                    "MS/UPVC",
+                    lengthDischarge,
+                    "M",
+                    1850,
+                  ),
+                  row(
+                    46,
+                    "Flexible Coupling",
+                    "Pump",
+                    "Rubber",
+                    "If req",
+                    "Set",
+                    8500,
+                  ),
+                  row(
+                    47,
+                    "Anti-vibration Pads",
+                    "Pump base",
+                    "Rubber",
+                    "As req",
+                    "Set",
+                    8500,
+                  ),
+                  row(
+                    48,
+                    "Pump Foundation Bolts",
+                    "M16",
+                    "SS/GI",
+                    "As req",
+                    "Nos",
+                    1500,
+                  ),
+                ],
+              },
+              {
+                area: "4. INJECTOR / DOSING AREA",
+                items: [
+                  row(
+                    49,
+                    "Injector",
+                    "Chlorine mixing",
+                    "PVC/PTFE",
+                    totalSystem,
+                    "No",
+                    28500,
+                  ),
+                  row(
+                    50,
+                    "Check Valve",
+                    `Size: ${size(solutionLineSize)}`,
+                    "UPVC",
+                    totalSystem,
+                    "No",
+                    18500,
+                  ),
+                  row(
+                    51,
+                    "Diaphragm Valve",
+                    `Size: ${size(solutionLineSize)}`,
+                    "PVC",
+                    totalSystem * 2,
+                    "No",
+                    24000,
+                  ),
+                  row(
+                    52,
+                    "Solution Pipe (Injector to Diffuser)",
+                    `Size: ${size(solutionLineSize)}`,
+                    "UPVC/CPVC",
+                    Math.max(lengthDischarge - solutionLineClientScope, 0),
+                    "M",
+                    1850,
+                  ),
+                  row(
+                    "CE",
+                    "Solution Pipe (Injector to Diffuser)",
+                    `Size: ${size(solutionLineSize)}`,
+                    "UPVC/CPVC",
+                    `${solutionLineClientScope} (Client Scope)`,
+                    "M",
+                    "CE",
+                  ),
+                  row(
+                    53,
+                    "Elbows / Tees / Reducers",
+                    "Pipe fittings",
+                    "UPVC",
+                    "As req",
+                    "Lot",
+                    20000,
+                  ),
+                  row(
+                    54,
+                    "Unions",
+                    "Maintenance",
+                    "UPVC",
+                    "As req",
+                    "Nos",
+                    3000,
+                  ),
+                  row(
+                    55,
+                    "Pipe Clamps",
+                    "Support",
+                    "GI/SS",
+                    "As req",
+                    "Nos",
+                    100,
+                  ),
+                  row(
+                    56,
+                    "U-Bolts",
+                    "Pipe fixing",
+                    "GI/SS",
+                    "As req",
+                    "Nos",
+                    100,
+                  ),
+                  row(57, "Threaded Rods", "Support", "GI", "As req", "M", 200),
+                  row(
+                    58,
+                    "Anchor Fasteners",
+                    "M10/M12",
+                    "SS",
+                    "As req",
+                    "Nos",
+                    150,
+                  ),
+                  row(
+                    59,
+                    "Gaskets",
+                    "Joint sealing",
+                    "PTFE/Rubber",
+                    "As req",
+                    "Nos",
+                    20,
+                  ),
+                  row(60, "PTFE Tape", "Sealing", "PTFE", "As req", "Nos", 120),
+                ],
+              },
+              {
+                area: "5. ELECTRICAL & INSTRUMENTATION",
+                items: [
+                  row(61, "Control Panel", "PLC based", "-", 1, "No", 545000),
+                  row(
+                    62,
+                    "Chlorine Leak Detector (2 Sensors)",
+                    "Fixed type",
+                    "-",
+                    1,
+                    "Set",
+                    64500,
+                  ),
+                  row(63, "Hooter + Beacon", "Alarm", "-", 1, "Set", 14500),
+                  row(
+                    64,
+                    "FRC Analyser",
+                    "Analyser Instrument",
+                    "Client Scope",
+                    "1 (Client Scope)",
+                    "Set",
+                    "CE",
+                  ),
+                  row(65, "Power Cable", "Pump supply", "-", 40, "M", 240),
+                  row(66, "Control Cable", "Signals", "-", 20, "M", 300),
+                  row(67, "Instrument Cable", "Shielded", "-", 40, "M", 300),
+                  row(68, "Cable Tray", "Ladder type", "-", 60, "M", 390),
+                  row(
+                    69,
+                    "Cable Tray Supports",
+                    "MS",
+                    "-",
+                    "As req",
+                    "Set",
+                    1200,
+                  ),
+                  row(
+                    70,
+                    "Cable Glands",
+                    "Double compression",
+                    "-",
+                    "As req",
+                    "Nos",
+                    650,
+                  ),
+                  row(71, "Cable Lugs", "Copper", "-", "As req", "Nos", 15000),
+                  row(
+                    72,
+                    "Ferrules",
+                    "Identification",
+                    "-",
+                    "As req",
+                    "Nos",
+                    8000,
+                  ),
+                  row(
+                    73,
+                    "Junction Boxes",
+                    "Field wiring",
+                    "-",
+                    "As req",
+                    "Nos",
+                    15000,
+                  ),
+                  row(
+                    74,
+                    "Earthing Cable (Client Scope)",
+                    "Cu/GI",
+                    "Client Scope",
+                    "As req (Client Scope)",
+                    "M",
+                    "CE",
+                  ),
+                  row(
+                    75,
+                    "Earthing Electrode (Client Scope)",
+                    "GI plate",
+                    "Client Scope",
+                    "1 (Client Scope)",
+                    "Set",
+                    "CE",
+                  ),
+                ],
+              },
+              {
+                area: "7. STRUCTURAL + CIVIL + GENERAL",
+                items: [
+                  row(
+                    76,
+                    "Base Frame / Skid",
+                    "Fabricated",
+                    "MS",
+                    1,
+                    "Set",
+                    240000,
+                  ),
+                  row(
+                    77,
+                    "Equipment Supports",
+                    "Fabricated",
+                    "MS",
+                    "As req",
+                    "Kg",
+                    145000,
+                  ),
+                  row(
+                    78,
+                    "Grouting Material",
+                    "Cement/chemical",
+                    "As req",
+                    "Lot (Client Scope)",
+                    "Lot",
+                    "CE",
+                  ),
+                  row(
+                    79,
+                    "Painting",
+                    "Epoxy coating",
+                    "As req",
+                    "Lot (Client Scope)",
+                    "Lot",
+                    "CE",
+                  ),
+                  row(
+                    80,
+                    "Name Plates",
+                    "Equipment tags",
+                    "SS",
+                    "As req",
+                    "Nos",
+                    8500,
+                  ),
+                  row(
+                    81,
+                    "Danger Boards",
+                    "Chlorine hazard",
+                    "As req",
+                    "Nos",
+                    25000,
+                  ),
+                ],
+              },
+              {
+                area: "5. DIFFUSER AREA",
+                items: [
+                  row(
+                    82,
+                    "Diffuser",
+                    "Dosing point",
+                    "PVC/SS",
+                    noOfDosingPoints * totalSystem,
+                    "No",
+                    14500,
+                  ),
+                  row(
+                    83,
+                    "Rotameter",
+                    "Flowmeter",
+                    "UPVC/CPVC",
+                    noOfDosingPoints * totalSystem,
+                    "No",
+                    0,
+                  ),
+                  row(
+                    83,
+                    "Globe valve/butterfly valve/Diaphragm valve",
+                    `Size: ${diffuserSize}`,
+                    "UPVC/CPVC",
+                    totalSystem,
+                    "No",
+                    8500,
+                  ),
+                  row(
+                    84,
+                    "Diffuser line length",
+                    `Size: ${diffuserSize}`,
+                    "UPVC/CPVC",
+                    diffuserLength,
+                    "M",
+                    8500,
+                  ),
+                ],
+              },
+            ];
+          }
+
+          function displayBOQ(areas) {
+            const boqResults = document.getElementById("boqResults");
+
+            let grandTotal = 0;
+
+            let html = `
+    <div class="results show boq-wrapper">
+      <h2 class="results-title">Generated BOQ</h2>
+  `;
+
+            areas.forEach((area, areaIndex) => {
+              let areaTotal = 0;
+
+              html += `
+      <div class="boq-area-title">${area.area}</div>
+
+      <table class="boq-table" data-area-index="${areaIndex}">
+
+        <thead>
+          <tr>
+            <th>Sl.No</th>
+            <th>Item Description</th>
+            <th>Specification</th>
+            <th>MOC</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Price/Unit</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+    `;
+
+              area.items.forEach((item, itemIndex) => {
+                const qtyNumber = parseFloat(item.qty) || 0;
+                const priceNumber = parseFloat(item.price) || 0;
+                const total = qtyNumber * priceNumber;
+
+                areaTotal += total;
+
+                html += `
+        <tr>
+          <td>${item.slNo}</td>
+          <td>${item.item}</td>
+          <td>
+            <input
+              type="text"
+              value="${item.specification || ""}"
+              class="boq-spec"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              value="${item.moc || ""}"
+              class="boq-moc"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              value="${item.qty}"
+              class="boq-qty"
+            />
+          </td>
+          <td>${item.unit}</td>
+          <td>
+            <input
+              type="text"
+              value="${item.price}"
+              class="boq-price"
+            />
+          </td>
+          <td class="boq-total">
+            ${total.toFixed(2)}
+          </td>
+          <td class="checkbox-cell">
+            <button class="btn btn-secondary btn-small remove-boq-row" type="button" data-area-index="${areaIndex}" data-row-index="${itemIndex}">Remove</button>
+          </td>
+        </tr>
+      `;
+              });
+
+              grandTotal += areaTotal;
+
+              html += `
+        </tbody>
+      </table>
+      <div class="boq-actions">
+        <button class="btn btn-primary btn-small" type="button" data-area-index="${areaIndex}">Add Row</button>
+      </div>
+      <div class="area-total">
+        Area Total : ₹ ${areaTotal.toLocaleString()}
+      </div>
+    `;
+            });
+
+            html += `
+      <div class="grand-total">
+        GRAND TOTAL : ₹ ${grandTotal.toLocaleString()}
+      </div>
+    </div>
+  `;
+
+            boqResults.innerHTML = html;
+
+            attachBOQEvents();
+          }
+
+          function attachBOQEvents() {
+            const inputFields = document.querySelectorAll(
+              ".boq-qty, .boq-price",
+            );
+            inputFields.forEach((input) => {
+              input.addEventListener("input", recalculateBoqTotals);
+            });
+
+            document.querySelectorAll(".remove-boq-row").forEach((button) => {
+              button.addEventListener("click", (event) => {
+                const row = event.target.closest("tr");
+                if (row) {
+                  row.remove();
+                  recalculateBoqTotals();
+                }
+              });
+            });
+
+            document
+              .querySelectorAll(".boq-actions button")
+              .forEach((button) => {
+                button.addEventListener("click", () => {
+                  const areaIndex = button.dataset.areaIndex;
+                  const tbody = document.querySelector(
+                    `.boq-table[data-area-index="${areaIndex}"] tbody`,
+                  );
+                  if (!tbody) return;
+                  const nextRowIndex = tbody.querySelectorAll("tr").length + 1;
+                  tbody.insertAdjacentHTML(
+                    "beforeend",
+                    `
+                    <tr>
+                      <td>${nextRowIndex}</td>
+                      <td><input type="text" class="boq-item" value="" /></td>
+                      <td><input type="text" class="boq-spec" value="" /></td>
+                      <td><input type="text" class="boq-moc" value="" /></td>
+                      <td><input type="text" class="boq-qty" value="" /></td>
+                      <td></td>
+                      <td><input type="text" class="boq-price" value="" /></td>
+                      <td class="boq-total">0.00</td>
+                      <td class="checkbox-cell"><button class="btn btn-secondary btn-small remove-boq-row" type="button">Remove</button></td>
+                    </tr>
+                  `,
+                  );
+                  const newRow = tbody.querySelector("tr:last-child");
+                  if (newRow) {
+                    const qtyInput = newRow.querySelector(".boq-qty");
+                    const priceInput = newRow.querySelector(".boq-price");
+                    const removeButton =
+                      newRow.querySelector(".remove-boq-row");
+                    if (qtyInput)
+                      qtyInput.addEventListener("input", recalculateBoqTotals);
+                    if (priceInput)
+                      priceInput.addEventListener(
+                        "input",
+                        recalculateBoqTotals,
+                      );
+                    if (removeButton) {
+                      removeButton.addEventListener("click", (event) => {
+                        const row = event.target.closest("tr");
+                        if (row) {
+                          row.remove();
+                          recalculateBoqTotals();
+                        }
+                      });
+                    }
+                  }
+                  recalculateBoqTotals();
+                });
+              });
+          }
+
+          function recalculateBoqTotals() {
+            let grandTotal = 0;
+            document.querySelectorAll(".boq-table").forEach((table) => {
+              let areaTotal = 0;
+              table.querySelectorAll("tbody tr").forEach((row, index) => {
+                const qty =
+                  parseFloat(row.querySelector(".boq-qty").value) || 0;
+                const price =
+                  parseFloat(row.querySelector(".boq-price").value) || 0;
+                const total = qty * price;
+                const slNoCell = row.querySelector("td:first-child");
+                if (slNoCell) slNoCell.textContent = index + 1;
+                const totalCell = row.querySelector(".boq-total");
+                if (totalCell) totalCell.innerText = total.toFixed(2);
+                areaTotal += total;
+              });
+              const areaTotalEl = table.nextElementSibling?.nextElementSibling;
+              if (areaTotalEl && areaTotalEl.classList.contains("area-total")) {
+                areaTotalEl.innerHTML = `Area Total : ₹ ${areaTotal.toLocaleString()}`;
+              }
+              grandTotal += areaTotal;
+            });
+            const grandTotalEl = document.querySelector(".grand-total");
+            if (grandTotalEl) {
+              grandTotalEl.innerHTML = `GRAND TOTAL : ₹ ${grandTotal.toLocaleString()}`;
+            }
+          }
+
+          // Show results section
+          document.getElementById("results").classList.add("show");
+          document
+            .getElementById("results")
+            .scrollIntoView({ behavior: "smooth" });
+        } catch (error) {
+          document.getElementById("errorContainer").innerHTML = `
+                    <div class="error-message">${error.message}</div>
+                `;
+        }
+      }
+
+      function displayMainResults(results) {
+        const mainResults = document.getElementById("mainResults");
+        mainResults.innerHTML = `
+                <div class="result-card">
+                    <div class="result-label">System Capacity</div>
+                    <div class="result-value">${results.systemCapacity.toFixed(2)} <span class="result-unit">kg/hr</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Motive Water Flow Rate</div>
+                    <div class="result-value">${results.motiveWaterFlowRate.toFixed(2)} <span class="result-unit">m³/hr</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Tonner/Cylinder Requirement</div>
+                    <div class="result-value">${results.tonnerRequirement} <span class="result-unit">nos</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Vacuum Gas Flow Rate</div>
+                    <div class="result-value">${results.vacuumGasFlowRate.toFixed(4)} <span class="result-unit">m³/hr</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Gas Line Size</div>
+                    <div class="result-value">${results.gasLineSize.toFixed(2)} <span class="result-unit">inch</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Vaccuum Line Size</div>
+                    <div class="result-value">${results.vacuumLineSize.toFixed(2)} <span class="result-unit">inch</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Suction Water Line Size</div>
+                    <div class="result-value">${results.suctionLineSize.toFixed(2)} <span class="result-unit">inch</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Discharge Water Line Size</div>
+                    <div class="result-value">${results.dischargeLineSize.toFixed(2)} <span class="result-unit">inch</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Suction NPSH Available</div>
+                    <div class="result-value">${results.suctionNPSH.toFixed(4)} <span class="result-unit">m</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Total Dynamic Head</div>
+                    <div class="result-value">${results.totalDynamicHead.toFixed(4)} <span class="result-unit">m</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Injector Nozzle Size</div>
+                    <div class="result-value">${results.injectorNozzleSize.toFixed(4)} <span class="result-unit">mm</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Solution Line Size</div>
+                    <div class="result-value">${results.solutionLineSize.toFixed(2)} <span class="result-unit">inch</span></div>
+                </div>
+            `;
+      }
+
+      function displayDiffuserResults(
+        noOfDosingPoints,
+        requiredChlorines,
+        workingTime,
+        motiveWaterFlowRate,
+        solutionLineSize,
+      ) {
+        const diffuserResults = document.getElementById("diffuserResults");
+        let html = '<h3 class="section-title">Diffuser Results</h3>';
+
+        for (let i = 1; i <= noOfDosingPoints; i++) {
+          const solutionStrength = getInputValue(`solutionStrength_${i}`);
+          const velocityDiffuser = getInputValue(`velocityDiffuser_${i}`);
+          const velocityDiffuserHole = getInputValue(
+            `velocityDiffuserHole_${i}`,
+          );
+          const diameterHole = getInputValue(`diameterHole_${i}`);
+          const ccSpacingLength = getInputValue(`ccSpacingLength_${i}`);
+          const marginSpace = getInputValue(`marginSpace_${i}`);
+
+          // Diffuser Flow Rate
+          const diffuserFlowRate =
+            (24000 * requiredChlorines[i - 1]) /
+            (workingTime * solutionStrength);
+
+          // Diffuser Line Size
+          const diffuserLineSize =
+            39.37 *
+            Math.sqrt(
+              (4 * diffuserFlowRate) / (3.14 * 3600000 * velocityDiffuser),
+            );
+
+          // Qrate
+          let qrate;
+          if (noOfDosingPoints <= 1) {
+            qrate = motiveWaterFlowRate / 3600;
+          } else {
+            qrate = diffuserFlowRate / 3600000;
+          }
+
+          // No of Holes
+          const diameterHoleM = diameterHole / 1000;
+
+          const noOfHoles = Math.round(
+            qrate /
+              velocityDiffuserHole /
+              ((Math.PI * Math.pow(diameterHoleM, 2)) / 4),
+          );
+
+          // No of Lines
+
+          const adjustedNoOfHoles =
+            noOfHoles % 2 !== 0 ? noOfHoles + 1 : noOfHoles;
+
+          // No of Lines
+          const noOfLines = findLargestDivisor(adjustedNoOfHoles);
+
+          // No of Holes per Line
+          const noOfHolesPerLine = noOfHoles / noOfLines;
+
+          // Pipe Diameter
+          let pipeDiameter;
+          if (noOfDosingPoints > 1) {
+            pipeDiameter = diffuserLineSize;
+          } else {
+            pipeDiameter = solutionLineSize * 0.0254;
+          }
+
+          // C-C Spacing Along Circumference
+          const ccSpacingCircumference = (3.14 * pipeDiameter) / noOfLines;
+
+          // Diffuser Length
+          const diffuserLength =
+            (noOfHolesPerLine - 1) * ccSpacingLength + 2 * marginSpace;
+
+          html += `
+                    <div class="diffuser-card">
+                        <div class="diffuser-title">Diffuser Point ${i}</div>
+                        <div class="result-grid">
+                            <div class="result-card">
+                                <div class="result-label">Diffuser Flow Rate</div>
+                                <div class="result-value">${diffuserFlowRate.toFixed(4)} <span class="result-unit">L/hr</span></div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Diffuser Line Size</div>
+                                <div class="result-value">${diffuserLineSize.toFixed(4)} <span class="result-unit">inch</span></div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">No of Holes</div>
+                                <div class="result-value">${noOfHoles}</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">No of Lines</div>
+                                <div class="result-value">${noOfLines}</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">No of Holes per Line</div>
+                                <div class="result-value">${noOfHolesPerLine.toFixed(0)}</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">C-C Spacing along Length</div>
+                                <div class="result-value">${ccSpacingLength.toFixed(2)} <span class="result-unit">mm</span></div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Margin Space on Both Sides</div>
+                                <div class="result-value">${marginSpace.toFixed(2)} <span class="result-unit">mm</span></div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">C-C Spacing Along Circumference</div>
+                                <div class="result-value">${ccSpacingCircumference.toFixed(4)} <span class="result-unit">m</span></div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Diffuser Length</div>
+                                <div class="result-value">${diffuserLength.toFixed(2)} <span class="result-unit">mm</span></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+
+        diffuserResults.innerHTML = html;
+      }
+
+      function resetCalculationConstants() {
+        Object.entries(DEFAULT_CONSTANTS).forEach(([id, value]) => {
+          const input = document.getElementById(id);
+          if (input) input.value = value;
+        });
+      }
+
+      function resetForm() {
+        document.querySelectorAll("input").forEach((input) => {
+          if (input.id === "noOfDosingPoints") {
+            input.value = "1";
+          } else {
+            input.value = "";
+          }
+        });
+        document.getElementById("flowRateUnit").value = "m3hr";
+        document.getElementById("results").classList.remove("show");
+        document.getElementById("errorContainer").innerHTML = "";
+        generateDosingPointsInputs(1);
+        resetCalculationConstants();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>

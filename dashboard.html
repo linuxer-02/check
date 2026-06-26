@@ -1,0 +1,1109 @@
+﻿<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP Chlorotech - Project Management System</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script defer="" src="/static/js/bundle.js"></script>
+    <script>
+      if (window.self !== window.top) {
+        var s = document.createElement("script");
+        s.src = "/visual-edit-overlay.js";
+        document.head.appendChild(s);
+        window.tailwind = window.tailwind || {};
+        tailwind.config = { corePlugins: { preflight: false } };
+        var t = document.createElement("script");
+        t.src = "https://cdn.tailwindcss.com";
+        document.head.appendChild(t);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="loginScreen" class="login-screen" style="display: none">
+      <form class="login-panel" onsubmit="loginUser(event)">
+        <h1>RSVP Chlorotech Login</h1>
+        <p>Use your Employee ID and Login Pass.</p>
+        <div class="form-group">
+          <label>User ID</label>
+          <input id="loginEmployeeId" type="text" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            id="loginPass"
+            type="password"
+            autocomplete="current-password"
+          />
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" type="submit">Login</button>
+        </div>
+        <p id="loginMessage" class="helper-note"></p>
+      </form>
+    </div>
+
+    <div
+      id="drawerOverlay"
+      class="drawer-overlay"
+      onclick="closeDrawers()"
+    ></div>
+    <aside id="enquiryDrawer" class="side-drawer">
+      <div class="drawer-header">
+        <div>
+          <h2>Enquiry</h2>
+          <p>
+            Capture lead details here. Saved enquiries can be reviewed and
+            converted into projects from the Enquiries table.
+          </p>
+        </div>
+        <button
+          class="close-drawer-btn"
+          type="button"
+          onclick="toggleEnquiryDrawer(false)"
+        >
+          ×
+        </button>
+      </div>
+      <div id="enquiryDrawerBody" class="drawer-body">
+        <div class="form-section">
+          <h4>Lead Qualification</h4>
+          <div class="form-group">
+            <label>Existing Client? (Yes / No)</label>
+            <div class="choice-grid">
+              <label class="choice-chip">
+                <input
+                  type="radio"
+                  name="existingClient"
+                  value="yes"
+                  onchange="setEnquiryField('existingClient', this.value)"
+                />
+                YES
+              </label>
+              <label class="choice-chip active">
+                <input
+                  type="radio"
+                  name="existingClient"
+                  value="no"
+                  checked
+                  onchange="setEnquiryField('existingClient', this.value)"
+                />
+                NO
+              </label>
+            </div>
+          </div>
+
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input
+                type="text"
+                value=""
+                oninput="setEnquiryField('companyName', this.value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Contact Person Name</label>
+              <input
+                type="text"
+                value=""
+                oninput="setEnquiryField('contactPersonName', this.value)"
+              />
+            </div>
+          </div>
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Contact Number</label>
+              <input
+                type="text"
+                value=""
+                oninput="setEnquiryField('contactNumber', this.value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>E-mail</label>
+              <input
+                type="email"
+                value=""
+                oninput="setEnquiryField('email', this.value)"
+              />
+            </div>
+          </div>
+          <p class="helper-note">
+            Either contact number or email must be filled.
+          </p>
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Industry Type</label>
+              <select onchange="setEnquiryField('industryType', this.value)">
+                <option value="">Select</option>
+                <option value="Municipal">Municipal</option>
+                <option value="Drinking Water">Drinking Water</option>
+                <option value="TWAD">TWAD</option>
+                <option value="Panchayat">Panchayat</option>
+                <option value="Power Plants">Power Plants</option>
+                <option value="Thermal">Thermal</option>
+                <option value="NTPC">NTPC</option>
+                <option value="Captive Power">Captive Power</option>
+                <option value="Pharma">Pharma</option>
+                <option value="Chemical">Chemical</option>
+                <option value="Process Industry">Process Industry</option>
+                <option value="WTP">WTP</option>
+                <option value="ETP">ETP</option>
+                <option value="STP">STP</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Builders">Builders</option>
+                <option value="Hotels">Hotels</option>
+                <option value="Hospitals">Hospitals</option>
+                <option value="Export Customers">Export Customers</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Reseller / Direct user / Other</label>
+              <select onchange="setEnquiryField('clientType', this.value)">
+                <option value="">Select</option>
+                <option value="Reseller">Reseller</option>
+                <option value="Direct user">Direct user</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Enquiry From</label>
+              <select onchange="setEnquiryField('enquiryFrom', this.value)">
+                <option value="">Select</option>
+                <option value="IndiaMart">IndiaMart</option>
+                <option value="Email">Email</option>
+                <option value="Website">Website</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Screenshot of Enquiry (optional)</label>
+              <input
+                type="file"
+                onchange="handleEnquiryFile(event, 'screenshot')"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Requirement (rough)</label>
+            <textarea
+              rows="4"
+              placeholder="Enter rough requirement"
+              oninput="setEnquiryField('requirement', this.value)"
+            ></textarea>
+          </div>
+
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Lead Priority</label>
+              <select onchange="setEnquiryField('leadPriority', this.value)">
+                <option value="">Select</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Estimated Project Value (rough)</label>
+              <input
+                type="text"
+                value=""
+                oninput="setEnquiryField('estimatedProjectValue', this.value)"
+              />
+            </div>
+          </div>
+
+          <div class="inline-grid">
+            <div class="form-group">
+              <label>Expected Timeline</label>
+              <select
+                onchange="setEnquiryField('expectedTimeline', this.value)"
+              >
+                <option value="">Select</option>
+                <option value="urgent">urgent</option>
+                <option value="3 months">3 months</option>
+                <option value="6 months">6 months</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button
+            class="btn btn-primary"
+            type="button"
+            onclick="submitEnquiry()"
+          >
+            Save Enquiry
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="resetEnquiry()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <aside id="employeeDrawer" class="side-drawer">
+      <div class="drawer-header">
+        <div>
+          <h2>Add New Employee</h2>
+          <p>
+            Save employee details for attendee and request dropdowns across
+            project tasks.
+          </p>
+        </div>
+        <button
+          class="close-drawer-btn"
+          type="button"
+          onclick="toggleEmployeeDrawer(false)"
+        >
+          X
+        </button>
+      </div>
+      <div id="employeeDrawerBody" class="drawer-body">
+        <div class="form-section">
+          <h4>Employee Info</h4>
+          <div class="form-group">
+            <label>Employee ID</label>
+            <input
+              type="text"
+              value=""
+              oninput="setEmployeeDraftField('employeeId', this.value)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Employee Name</label>
+            <input
+              type="text"
+              value=""
+              oninput="setEmployeeDraftField('name', this.value)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Login Pass</label>
+            <input
+              type="password"
+              value=""
+              oninput="setEmployeeDraftField('loginPass', this.value)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Designation</label>
+            <select onchange="setEmployeeDraftField('designation', this.value)">
+              <option value="">Select designation</option>
+              <option value="Sales">Sales</option>
+              <option value="Project">Project</option>
+              <option value="Draftsman">Draftsman</option>
+              <option value="Production">Production</option>
+              <option value="Purchase">Purchase</option>
+              <option value="Accounts">Accounts</option>
+              <option value="Administrator">Administrator</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>E-mail (office email)</label>
+            <input
+              type="email"
+              value=""
+              oninput="setEmployeeDraftField('email', this.value)"
+            />
+          </div>
+          <div class="form-group">
+            <label>Attach document</label>
+            <input type="file" onchange="handleEmployeeFile(event)" />
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button
+            class="btn btn-primary"
+            type="button"
+            onclick="saveEmployee()"
+          >
+            Save Employee
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="resetEmployeeDraft()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <header>
+      <div class="header-left">
+        <div class="logo-icon">RS</div>
+        <div class="header-title">
+          <h1>RSVP Chlorotech</h1>
+          <p>Project Management System</p>
+        </div>
+      </div>
+      <div class="user-chip">
+        <div id="currentUserLabel"></div>
+        <button class="btn btn-secondary" type="button" onclick="logoutUser()">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <nav class="side-menu" aria-label="Main menu">
+        <div class="side-menu-title">Menu</div>
+        <div class="side-menu-list">
+          <button
+            class="nav-btn active"
+            type="button"
+            onclick="switchView('database', this)"
+          >
+            <span class="nav-icon">DT</span>
+            Database
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('enquiries', this)"
+          >
+            <span class="nav-icon">EQ</span>
+            Enquiries
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('employees', this)"
+          >
+            <span class="nav-icon">EM</span>
+            Employees
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('clients', this)"
+          >
+            <span class="nav-icon">CL</span>
+            Clients
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('projects', this)"
+          >
+            <span class="nav-icon">PR</span>
+            Projects
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('meetings', this)"
+          >
+            <span class="nav-icon">MT</span>
+            Meetings
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('site-visits', this)"
+          >
+            <span class="nav-icon">SV</span>
+            Site Visits
+          </button>
+          <button
+            class="nav-btn"
+            type="button"
+            onclick="switchView('requests', this)"
+          >
+            <span class="nav-icon">RQ</span>
+            Requests
+          </button>
+        </div>
+      </nav>
+      <div class="content-area">
+        <div id="dashboard" class="view">
+          <div id="dashboardContent">
+            <div class="empty-state">
+              <h3>No project created yet</h3>
+              <p>
+                Create a project from an enquiry, then open it from the Projects
+                menu to see the full Project Timeline &amp; Stages dashboard.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="stageDetailViews"></div>
+
+        <div id="enquiries" class="view">
+          <div id="enquiriesContent"></div>
+        </div>
+
+        <div id="employees" class="view">
+          <div id="employeesContent"></div>
+        </div>
+
+        <div id="clients" class="view">
+          <div id="clientsContent"></div>
+        </div>
+
+        <div id="projects" class="view">
+          <div id="projectsContent"></div>
+        </div>
+
+        <div id="meetings" class="view">
+          <div id="meetingsContent"></div>
+        </div>
+
+        <div id="site-visits" class="view">
+          <div id="siteVisitsContent"></div>
+        </div>
+
+        <div id="requests" class="view">
+          <div id="requestsContent"></div>
+        </div>
+
+        <div id="database" class="view active">
+          <div id="databaseContent">
+            <h2 class="section-title">Database</h2>
+            <div class="folder-grid">
+              <div class="folder-card">
+                <h3>Employee Info</h3>
+                <p class="helper-note">
+                  Employee names, designations, office emails, and attached
+                  documents.
+                </p>
+                <div class="action-buttons" style="margin-top: 14px">
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    onclick="toggleEmployeeDrawer(true)"
+                  >
+                    Add New Employee
+                  </button>
+                </div>
+              </div>
+              <div class="folder-card">
+                <h3>Projects</h3>
+                <p class="helper-note">
+                  All existing projects and their stored PDF/document records.
+                </p>
+              </div>
+              <div class="folder-card">
+                <h3>Proposal Document</h3>
+                <p class="helper-note">
+                  Linked to backend storage at
+                  <code>/database/Proposal Document</code>. Files are pre-seeded
+                  — replace placeholders later.
+                </p>
+                <div class="action-buttons" style="margin-top: 14px">
+                  <button
+                    class="btn btn-secondary"
+                    type="button"
+                    onclick="refreshDatabaseTree()"
+                  >
+                    Refresh Storage
+                  </button>
+                </div>
+                <div
+                  id="databaseTreeBox"
+                  class="helper-note"
+                  style="
+                    margin-top: 10px;
+                    max-height: 140px;
+                    overflow: auto;
+                    font-family: var(--mono);
+                    font-size: 0.78rem;
+                    color: var(--muted);
+                  "
+                >
+                  <div>[database]</div>
+                  <div>&nbsp;&nbsp;[Employee Details]</div>
+                  <div>&nbsp;&nbsp;[Projects]</div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[GreenFlow Pharma]</div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Proposal Docs]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEvaporatorSteam.html
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyGasChlorinator.html
+                  </div>
+                  <div>&nbsp;&nbsp;[Proposal Document]</div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[CompanyProfile]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- CompanyProfile.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Credentials.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ExperienceApproval.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[ControlPhilosophy]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophyNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ControlPhilosophySodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[Costing]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- CostingClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- CostingClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- CostingClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    CostingNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- CostingSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[DeliveryTerms]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    DeliveryTermsSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[MaintenancePlan]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    MaintenancePlanSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[O&amp;MManual]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    O&amp;MManualSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[OperatingCost]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    OperatingCostSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[PaymentTerms]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PaymentTermsSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[PerformanceGuarantee]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    PerformanceGuaranteeSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[ProductBrouchure]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    ProductBrochureSodiumHypo.docx
+                  </div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;[Warranty]</div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyAbsorptionSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- WarrantyClo2_1.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- WarrantyClo2_2.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- WarrantyClo2_3.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyEChloroBatch.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyEChloroContin.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyEvaporatorElectrical.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyEvaporatorHeater.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyEvaporatorSteam.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyGasChlorinator.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantyNeutralizationSystem.docx
+                  </div>
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-
+                    WarrantySodiumHypo.docx
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="database-section">
+              <h2 class="section-title">Employee Info</h2>
+              <div class="data-list">
+                <div class="empty-state">
+                  <h3>No employees added</h3>
+                  <p>
+                    Add employees here so meeting, visit, and document request
+                    tasks can use them.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="database-section">
+              <h2 class="section-title">Projects</h2>
+              <div class="data-list">
+                <div class="empty-state">
+                  <h3>No project folders yet</h3>
+                  <p>
+                    Projects will appear here after enquiries are converted.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="reports" class="view">
+          <h2 class="section-title">Project Reports</h2>
+          <p class="helper-note">
+            Reports and analytics can be connected here later.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="subtaskModal" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" type="button" onclick="closeSubtaskModal()">
+          ×
+        </button>
+        <div class="modal-header">
+          <h3 id="modalTitle">Task Details</h3>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+      </div>
+    </div>
+
+    <div id="utilityModal" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" type="button" onclick="closeUtilityModal()">
+          X
+        </button>
+        <div class="modal-header">
+          <h3 id="utilityModalTitle">Calendar</h3>
+        </div>
+        <div id="utilityModalBody" class="modal-body"></div>
+      </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
